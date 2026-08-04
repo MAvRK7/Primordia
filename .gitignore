@@ -1,0 +1,5 @@
+# Local Unity build output
+/Builds/
+
+# Unity Android intermediate build files
+/PrimordiaGame/.utmp/
