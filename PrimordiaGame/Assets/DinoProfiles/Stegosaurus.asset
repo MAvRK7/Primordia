@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: abb9fa5d0b4c9904c82fdff2e90ef34f, type: 3}
+  m_Name: Stegosaurus
+  m_EditorClassIdentifier: Assembly-CSharp::DinoProfile
+  sightRange: 10
+  sightAngle: 45
+  hearingRadius: 8
+  noiseMemory: 3
+  attackDamage: 10
+  attackRange: 2
+  attackCooldown: 1.5
+  moveSpeed: 3
+  health: 100
+  xpReward: 10
+  isPredator: 0
