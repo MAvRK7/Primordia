@@ -3,3 +3,6 @@
 
 # Unity Android intermediate build files
 /PrimordiaGame/.utmp/
+
+# Reproducible Blender rigging previews and intermediate .blend files
+/PrimordiaGame/Tools/Generated/

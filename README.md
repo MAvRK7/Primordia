@@ -128,3 +128,7 @@ Unity-generated directories such as `Library`, `Temp`, `Logs`, `obj`, and `UserS
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
+
+### Third-party assets
+
+- ["Low Poly Hand - 3D Model"](https://skfb.ly/prZXT) by ronildo.facanha is licensed under the [Creative Commons Attribution 4.0 International License](https://creativecommons.org/licenses/by/4.0/).
