@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 340f6d03be93e6245a65a943fe6ce00c
+guid: 854ed60ff0e15994c8a26253d5fc1244
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
@@ -31,11 +31,11 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Armature|Velociraptor_Attack
-      takeName: Armature|Velociraptor_Attack
-      internalID: 4143700261437895409
+      name: Armature|Triceratops_Attack
+      takeName: Armature|Triceratops_Attack
+      internalID: -5005591362783231031
       firstFrame: 0
-      lastFrame: 20
+      lastFrame: 18
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -60,11 +60,11 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature|Velociraptor_Death
-      takeName: Armature|Velociraptor_Death
-      internalID: 587044913112085974
+      name: Armature|Triceratops_Death
+      takeName: Armature|Triceratops_Death
+      internalID: -2003082395451159932
       firstFrame: 0
-      lastFrame: 31
+      lastFrame: 43
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -89,11 +89,11 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature|Velociraptor_Idle
-      takeName: Armature|Velociraptor_Idle
-      internalID: -5871086038374619908
+      name: Armature|Triceratops_Idle
+      takeName: Armature|Triceratops_Idle
+      internalID: 5289134713090633407
       firstFrame: 0
-      lastFrame: 60
+      lastFrame: 61
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -118,11 +118,11 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature|Velociraptor_Jump
-      takeName: Armature|Velociraptor_Jump
-      internalID: 4845060526184193375
+      name: Armature|Triceratops_Jump
+      takeName: Armature|Triceratops_Jump
+      internalID: -2568141974510586484
       firstFrame: 0
-      lastFrame: 27
+      lastFrame: 40
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -147,11 +147,11 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature|Velociraptor_Run
-      takeName: Armature|Velociraptor_Run
-      internalID: -5154290312366767704
+      name: Armature|Triceratops_Run
+      takeName: Armature|Triceratops_Run
+      internalID: 8011737399226661841
       firstFrame: 0
-      lastFrame: 13
+      lastFrame: 19
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -176,11 +176,11 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature|Velociraptor_Walk
-      takeName: Armature|Velociraptor_Walk
-      internalID: 359388479972869541
+      name: Armature|Triceratops_Walk
+      takeName: Armature|Triceratops_Walk
+      internalID: 8014001432420945911
       firstFrame: 0
-      lastFrame: 58
+      lastFrame: 70
       wrapMode: 0
       orientationOffsetY: 0
       level: 0

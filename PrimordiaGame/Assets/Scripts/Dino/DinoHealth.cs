@@ -3,10 +3,11 @@ using UnityEngine.AI;
 
 public class DinoHealth : MonoBehaviour
 {
-    public DinoProfile profile;      // same profile the DinoAI uses
+    public DinoProfile profile;
+    public bool IsDead { get; private set; }
+
     private float currentHealth;
     private Animator animator;
-    private bool isDead;
 
     void Start()
     {
@@ -14,34 +15,33 @@ public class DinoHealth : MonoBehaviour
         animator = GetComponentInChildren<Animator>();
     }
 
-    public void TakeDamage(float amount)
+    // attacker = who dealt the damage (player or another dino); can be null
+    public void TakeDamage(float amount, Transform attacker)
     {
-        if (isDead) return;                       // already dead, ignore
+        if (IsDead) return;
         currentHealth -= amount;
-        Debug.Log(name + " took " + amount + ". HP: " + currentHealth);
 
-        if (currentHealth <= 0)
-            Die();
+        // tell my own AI I was hit (for passive retaliators)
+        DinoAI ai = GetComponent<DinoAI>();
+        if (ai != null && attacker != null) ai.OnAttacked(attacker);
+
+        if (currentHealth <= 0) Die();
     }
 
     void Die()
     {
-        isDead = true;
+        IsDead = true;
         Debug.Log(name + " died!");
-
-        // stop the AI and movement
-        GetComponent<DinoAI>().enabled = false;
-        if (GetComponent<NavMeshAgent>().isOnNavMesh)
-            GetComponent<NavMeshAgent>().isStopped = true;
-
-        // play death animation
-        animator.SetTrigger("Die");
-
-        // leave the corpse for a few seconds, then remove it
+        DinoAI ai = GetComponent<DinoAI>();
+        if (ai != null) ai.enabled = false;
+        NavMeshAgent agent = GetComponent<NavMeshAgent>();
+        if (agent != null && agent.isOnNavMesh) agent.isStopped = true;
+        if (animator != null) animator.SetTrigger("Die");
         Destroy(gameObject, 5f);
     }
+
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.K)) TakeDamage(9999);  // TEMP test kill
+        if (Input.GetKeyDown(KeyCode.K)) TakeDamage(9999, null);  // TEMP test kill
     }
 }
