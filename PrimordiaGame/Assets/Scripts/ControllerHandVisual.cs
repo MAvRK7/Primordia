@@ -5,28 +5,19 @@ using UnityEngine.InputSystem;
 namespace Primordia
 {
     /// <summary>
-    /// Replaces a tracked-controller model with an animated skinned hand.
-    /// The controller remains the pose source; grip and trigger drive finger curl.
+    /// Animates a serialized controller-hand prefab from grip and trigger input.
+    /// Controller tracking remains the pose source; this component only curls fingers.
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class ControllerHandVisual : MonoBehaviour
     {
-        [Header("Model")]
-        [SerializeField] private GameObject m_HandModel;
-        [SerializeField] private Transform m_LegacyControllerModel;
-        [SerializeField] private Material m_HandMaterial;
+        [SerializeField] private SkinnedMeshRenderer m_HandRenderer;
         [SerializeField] private bool m_IsLeftHand;
-        [SerializeField] private Vector3 m_ModelLocalPosition;
-        [SerializeField] private Vector3 m_ModelLocalEulerAngles;
-        [SerializeField] private Vector3 m_ModelLocalScale = Vector3.one;
-
-        [Header("Input")]
         [SerializeField] private InputActionReference m_GripAction;
         [SerializeField] private InputActionReference m_TriggerAction;
         [SerializeField, Min(0f)] private float m_SmoothingSpeed = 18f;
 
         private readonly Dictionary<string, BonePose> m_Bones = new();
-        private GameObject m_Instance;
         private float m_Grip;
         private float m_Trigger;
 
@@ -44,66 +35,33 @@ namespace Primordia
 
         private void Awake()
         {
-            if (m_HandModel == null)
+            if (m_HandRenderer == null)
+                m_HandRenderer = GetComponentInChildren<SkinnedMeshRenderer>(true);
+            if (m_HandRenderer == null)
             {
-                Debug.LogError("Controller hand visual has no hand model.", this);
+                Debug.LogError("Controller hand prefab has no skinned renderer.", this);
+                enabled = false;
                 return;
             }
-
-            m_Instance = Instantiate(m_HandModel, transform, false);
-            m_Instance.name = m_IsLeftHand
-                ? "Left Controller Hand"
-                : "Right Controller Hand";
-            m_Instance.transform.SetLocalPositionAndRotation(
-                m_ModelLocalPosition,
-                Quaternion.Euler(m_ModelLocalEulerAngles));
-            m_Instance.transform.localScale = m_ModelLocalScale;
-
-            var handRenderer = m_Instance.GetComponentInChildren<SkinnedMeshRenderer>(true);
-            if (handRenderer == null)
-            {
-                Debug.LogError("Controller hand model has no skinned renderer.", this);
-                Destroy(m_Instance);
-                m_Instance = null;
-                return;
-            }
-
-            foreach (var modelRenderer in m_Instance.GetComponentsInChildren<Renderer>(true))
-                modelRenderer.enabled = modelRenderer == handRenderer;
-            foreach (var modelCamera in m_Instance.GetComponentsInChildren<Camera>(true))
-                modelCamera.enabled = false;
-            foreach (var modelLight in m_Instance.GetComponentsInChildren<Light>(true))
-                modelLight.enabled = false;
-            if (m_HandMaterial != null)
-                handRenderer.sharedMaterial = m_HandMaterial;
 
             var prefix = m_IsLeftHand ? "L_" : "R_";
-            foreach (var bone in m_Instance.GetComponentsInChildren<Transform>(true))
+            foreach (var bone in m_HandRenderer.bones)
             {
-                if (bone.name.StartsWith(prefix))
+                if (bone != null && bone.name.StartsWith(prefix))
                     m_Bones[bone.name] = new BonePose(bone);
             }
 
             if (m_Bones.Count != 26)
             {
                 Debug.LogError(
-                    $"Controller hand model exposed {m_Bones.Count} XR bones; expected 26.",
+                    $"Controller hand prefab exposed {m_Bones.Count} XR bones; expected 26.",
                     this);
-                Destroy(m_Instance);
-                m_Instance = null;
-                m_Bones.Clear();
-                return;
+                enabled = false;
             }
-
-            if (m_LegacyControllerModel != null)
-                m_LegacyControllerModel.gameObject.SetActive(false);
         }
 
         private void Update()
         {
-            if (m_Instance == null)
-                return;
-
             var targetGrip = ReadValue(m_GripAction);
             var targetTrigger = ReadValue(m_TriggerAction);
             var blend = m_SmoothingSpeed <= 0f
@@ -148,12 +106,6 @@ namespace Primordia
             return action != null && action.enabled
                 ? Mathf.Clamp01(action.ReadValue<float>())
                 : 0f;
-        }
-
-        private void OnDestroy()
-        {
-            if (m_Instance != null)
-                Destroy(m_Instance);
         }
     }
 }
