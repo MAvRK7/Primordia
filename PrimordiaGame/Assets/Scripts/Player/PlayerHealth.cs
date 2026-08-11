@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class PlayerHealth : MonoBehaviour
 {
+    public bool IsDead { get; private set; }
     public float maxHealth = 100f;
     private float currentHealth;
 
@@ -17,8 +18,8 @@ public class PlayerHealth : MonoBehaviour
 
         if (currentHealth <= 0)
         {
+            IsDead = true;
             Debug.Log("Player died!");
-            currentHealth = maxHealth;   // simple respawn: reset health for now
         }
     }
 }

@@ -12,14 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abb9fa5d0b4c9904c82fdff2e90ef34f, type: 3}
   m_Name: Raptor
   m_EditorClassIdentifier: Assembly-CSharp::DinoProfile
+  behaviour: 0
   sightRange: 12
-  sightAngle: 45
+  sightAngle: 60
   hearingRadius: 18
   noiseMemory: 5
-  attackDamage: 10
-  attackRange: 2
+  attackRange: 3
   attackCooldown: 1.5
-  moveSpeed: 7
+  attackDamage: 35
+  moveSpeed: 8
   health: 100
   xpReward: 10
-  isPredator: 1
