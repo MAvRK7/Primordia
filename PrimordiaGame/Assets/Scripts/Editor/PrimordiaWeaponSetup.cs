@@ -7,7 +7,7 @@ using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
 /// <summary>
 /// Recreates missing reference weapon assets from the Tools menu.
-/// Existing definition tuning and prefabs are preserved.
+/// Existing definition tuning is preserved; reference prefabs receive the canonical grip pose.
 /// </summary>
 public static class PrimordiaWeaponSetup
 {
@@ -67,6 +67,7 @@ public static class PrimordiaWeaponSetup
         if (AssetDatabase.LoadAssetAtPath<GameObject>(k_ScrapRevolverPrefabPath) == null)
             CreateScrapRevolverPrefab(revolverDefinition);
 
+        TuneScrapRevolverPrefab();
         EnsureKnifePrefab(knifeDefinition);
 
         AssetDatabase.SaveAssets();
@@ -147,7 +148,7 @@ public static class PrimordiaWeaponSetup
                 0f,
                 -visualBounds.extents.y * 0.3f,
                 -visualBounds.extents.z * 0.2f);
-            attach.localRotation = Quaternion.Euler(0f, 180f, 0f);
+            attach.localRotation = Quaternion.identity;
 
             var firePoint = CreateChild(root.transform, "Muzzle");
             firePoint.localPosition = new Vector3(
@@ -241,6 +242,15 @@ public static class PrimordiaWeaponSetup
             if (grab == null)
                 grab = root.AddComponent<XRGrabInteractable>();
 
+            var attach = root.transform.Find("handle_anchor");
+            if (attach == null)
+                attach = CreateChild(root.transform, "handle_anchor");
+            // The knife mesh extends along local +Y. Rotating the attach frame -90 degrees
+            // makes the blade extend along the controller-hand's +Z grip direction.
+            attach.SetLocalPositionAndRotation(Vector3.zero, Quaternion.Euler(-90f, 0f, 0f));
+            grab.attachTransform = attach;
+            ConfigureHeldPhysics(root, grab);
+
             var audioSource = root.GetComponent<AudioSource>();
             if (audioSource == null)
             {
@@ -291,6 +301,51 @@ public static class PrimordiaWeaponSetup
         {
             PrefabUtility.UnloadPrefabContents(root);
         }
+    }
+
+    static void TuneScrapRevolverPrefab()
+    {
+        var root = PrefabUtility.LoadPrefabContents(k_ScrapRevolverPrefabPath);
+        try
+        {
+            var grab = root.GetComponent<XRGrabInteractable>();
+            if (grab == null)
+                throw new InvalidOperationException("The Scrap Revolver prefab has no grab interactable.");
+
+            var attach = root.transform.Find("Attach");
+            if (attach == null)
+                attach = CreateChild(root.transform, "Attach");
+
+            // Controller-mode hands use the tracked grip frame directly. The old 180-degree
+            // controller-model correction made the revolver face backward in the new hand mesh.
+            attach.SetLocalPositionAndRotation(
+                new Vector3(0f, -0.029f, -0.028f),
+                Quaternion.identity);
+            grab.attachTransform = attach;
+            ConfigureHeldPhysics(root, grab);
+
+            PrefabUtility.SaveAsPrefabAsset(root, k_ScrapRevolverPrefabPath);
+        }
+        finally
+        {
+            PrefabUtility.UnloadPrefabContents(root);
+        }
+    }
+
+    static void ConfigureHeldPhysics(GameObject root, XRGrabInteractable grab)
+    {
+        grab.useDynamicAttach = false;
+        grab.movementType = XRBaseInteractable.MovementType.Kinematic;
+        grab.attachEaseInTime = 0.05f;
+        grab.smoothPosition = false;
+        grab.smoothRotation = false;
+        grab.throwOnDetach = true;
+
+        var body = root.GetComponent<Rigidbody>();
+        if (body == null)
+            body = root.AddComponent<Rigidbody>();
+        body.interpolation = RigidbodyInterpolation.Interpolate;
+        body.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
     }
 
     static InputActionReference FindReloadActionReference()

@@ -67,7 +67,7 @@ public class DinoAI : MonoBehaviour
                 }
                 else if (currentTarget != null && recentlySensed)
                 {
-                    float d = Vector3.Distance(transform.position, currentTarget.position);
+                    float d = PlanarDistance(transform.position, currentTarget.position);
                     state = ResolveCombatState(d, currentTarget);
                 }
                 else if (hears && currentTarget == player)
@@ -96,7 +96,7 @@ public class DinoAI : MonoBehaviour
                 }
                 else if (currentTarget != null && recentlySensed)
                 {
-                    float d = Vector3.Distance(transform.position, currentTarget.position);
+                    float d = PlanarDistance(transform.position, currentTarget.position);
                     state = ResolveCombatState(d, currentTarget);
                 }
                 else if (state == State.Chase || state == State.Attack)
@@ -135,9 +135,9 @@ public class DinoAI : MonoBehaviour
     {
         float combat = CombatDistance(target);
         if (state == State.Attack)
-            return (d > combat * 1.6f) ? State.Chase : State.Attack;
+            return (d > combat * 1.25f) ? State.Chase : State.Attack;
         else
-            return (d <= combat * 1.15f) ? State.Attack : State.Chase;
+            return (d <= combat) ? State.Attack : State.Chase;
     }
 
     void Act()
@@ -181,13 +181,14 @@ public class DinoAI : MonoBehaviour
 
             case State.Attack:
                 if (currentTarget == null) { state = State.Wander; agent.stoppingDistance = 0f; break; }
-                agent.isStopped = false;
+                // Stop locomotion while attacking. Continuing to drive toward a headset target
+                // lets an agent push its centre through the player's CharacterController.
+                agent.isStopped = true;
                 agent.stoppingDistance = CombatDistance(currentTarget);
-                agent.SetDestination(currentTarget.position);
                 FaceTarget(currentTarget);
 
-                PlayerHealth php = currentTarget.GetComponent<PlayerHealth>();
-                DinoHealth dh = currentTarget.GetComponent<DinoHealth>();
+                PlayerHealth php = currentTarget.GetComponentInParent<PlayerHealth>();
+                DinoHealth dh = currentTarget.GetComponentInParent<DinoHealth>();
                 bool targetDead = (php != null && php.IsDead) || (dh != null && dh.IsDead);
                 if (targetDead)
                 {
@@ -243,10 +244,20 @@ public class DinoAI : MonoBehaviour
 
     float CombatDistance(Transform target)
     {
-        NavMeshAgent ta = target.GetComponent<NavMeshAgent>();
+        NavMeshAgent ta = target.GetComponentInParent<NavMeshAgent>();
+        CharacterController targetController = target.GetComponentInParent<CharacterController>();
         float myR = agent != null ? agent.radius : 0f;
-        float targetR = ta != null ? ta.radius : 0f;
+        float targetR = ta != null
+            ? ta.radius
+            : targetController != null ? targetController.radius : 0f;
         return profile.attackRange + myR + targetR;
+    }
+
+    static float PlanarDistance(Vector3 a, Vector3 b)
+    {
+        a.y = 0f;
+        b.y = 0f;
+        return Vector3.Distance(a, b);
     }
 
     Vector3 RandomWanderPoint()
@@ -270,7 +281,12 @@ public class DinoAI : MonoBehaviour
         if (to.magnitude > profile.sightRange) return false;
         if (Vector3.Angle(transform.forward, to) > profile.sightAngle) return false;
         if (Physics.Raycast(transform.position, to.normalized, out RaycastHit hit, profile.sightRange))
-            if (hit.transform != t) return false;
+        {
+            bool hitTargetHierarchy = hit.transform == t ||
+                hit.transform.IsChildOf(t) ||
+                t.IsChildOf(hit.transform);
+            if (!hitTargetHierarchy) return false;
+        }
         return true;
     }
 
