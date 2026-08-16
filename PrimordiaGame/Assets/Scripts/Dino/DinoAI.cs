@@ -277,6 +277,8 @@ public class DinoAI : MonoBehaviour
     bool CanHearNoise()
     {
         if (Time.time - PlayerNoise.lastNoiseTime > profile.noiseMemory) return false;
-        return Vector3.Distance(transform.position, PlayerNoise.lastNoisePos) < profile.hearingRadius;
+        float audibleRange = Mathf.Min(profile.hearingRadius, PlayerNoise.lastNoiseRange);
+        return audibleRange > 0f &&
+            Vector3.Distance(transform.position, PlayerNoise.lastNoisePos) < audibleRange;
     }
 }

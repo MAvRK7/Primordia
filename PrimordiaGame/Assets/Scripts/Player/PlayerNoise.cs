@@ -9,6 +9,16 @@ public class PlayerNoise : MonoBehaviour
     public static float   lastNoiseRange;
     public static float   lastNoiseTime = -999f;   // start long ago = "no recent noise"
 
+    public static void EmitNoise(Vector3 position, float range)
+    {
+        if (range <= 0f)
+            return;
+
+        lastNoisePos = position;
+        lastNoiseRange = range;
+        lastNoiseTime = Time.time;
+    }
+
     void Update()
     {
         // Am I moving? (any WASD held)
@@ -16,10 +26,6 @@ public class PlayerNoise : MonoBehaviour
                    || Input.GetKey("s") || Input.GetKey("d");
 
         if (moving)
-        {
-            lastNoisePos   = transform.position;  // where the noise happened
-            lastNoiseRange = moveNoise;           // how far it carries
-            lastNoiseTime  = Time.time;           // when it happened
-        }
+            EmitNoise(transform.position, moveNoise);
     }
 }
