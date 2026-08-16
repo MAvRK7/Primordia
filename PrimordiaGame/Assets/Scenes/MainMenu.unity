@@ -1248,6 +1248,7 @@ GameObject:
   - component: {fileID: 1697315650}
   - component: {fileID: 1697315652}
   - component: {fileID: 1697315651}
+  - component: {fileID: 1697315653}
   m_Layer: 0
   m_Name: Fire
   m_TagString: Untagged
@@ -1270,6 +1271,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 445890482}
   m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
+--- !u!114 &1697315653
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1697315649}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d3f2f82f5984d5ca3e7f11ed7681a4f, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::FireBloomEmitter
+  bloomBrightness: 3.25
+  bloomTint: {r: 1, g: 0.85, b: 0.55, a: 1}
 --- !u!199 &1697315651
 ParticleSystemRenderer:
   serializedVersion: 7
