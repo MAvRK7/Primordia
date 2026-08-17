@@ -32,6 +32,11 @@ public class DinoHealth : MonoBehaviour
     {
         IsDead = true;
         Debug.Log(name + " died!");
+
+        // spawn loot drops (placeholder cubes for now)
+        DinoLoot loot = GetComponent<DinoLoot>();
+        if (loot != null) loot.DropLoot();
+
         DinoAI ai = GetComponent<DinoAI>();
         if (ai != null) ai.enabled = false;
         NavMeshAgent agent = GetComponent<NavMeshAgent>();

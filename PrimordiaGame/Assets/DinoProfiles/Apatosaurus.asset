@@ -13,13 +13,38 @@ MonoBehaviour:
   m_Name: Apatosaurus
   m_EditorClassIdentifier: Assembly-CSharp::DinoProfile
   behaviour: 2
+  prefersPlayer: 1
   sightRange: 14
   sightAngle: 60
   hearingRadius: 6
   noiseMemory: 3
-  attackRange: 2
+  giveUpTimer: 5
+  leashRange: 35
+  attackRange: 10
   attackCooldown: 1.5
-  attackDamage: 10
+  attackDamage: 80
   moveSpeed: 2.5
-  health: 100
-  xpReward: 10
+  health: 10000
+  xpReward: 80
+  drops:
+  - partName: Giant Bone
+    minAmount: 2
+    maxAmount: 2
+    chance: 1
+    isRare: 0
+  - partName: Bone
+    minAmount: 4
+    maxAmount: 8
+    chance: 1
+    isRare: 0
+  - partName: Hide
+    minAmount: 6
+    maxAmount: 10
+    chance: 1
+    isRare: 0
+  - partName: Ancient Bone
+    minAmount: 1
+    maxAmount: 1
+    chance: 0.1
+    isRare: 1
+  isAlpha: 0

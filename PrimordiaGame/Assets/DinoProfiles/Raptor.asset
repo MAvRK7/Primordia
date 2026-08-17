@@ -12,14 +12,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abb9fa5d0b4c9904c82fdff2e90ef34f, type: 3}
   m_Name: Raptor
   m_EditorClassIdentifier: Assembly-CSharp::DinoProfile
-  behaviour: 0
-  sightRange: 12
+  behaviour: 1
+  prefersPlayer: 0
+  sightRange: 20
   sightAngle: 60
   hearingRadius: 18
   noiseMemory: 5
+  giveUpTimer: 5
+  leashRange: 35
   attackRange: 3
   attackCooldown: 1.5
-  attackDamage: 35
+  attackDamage: 20
   moveSpeed: 8
   health: 100
   xpReward: 10
+  drops:
+  - partName: Sickle Claw
+    minAmount: 1
+    maxAmount: 1
+    chance: 1
+    isRare: 0
+  - partName: Hide
+    minAmount: 1
+    maxAmount: 1
+    chance: 1
+    isRare: 0
+  - partName: Alpha pelt
+    minAmount: 1
+    maxAmount: 1
+    chance: 0.08
+    isRare: 1
+  isAlpha: 0

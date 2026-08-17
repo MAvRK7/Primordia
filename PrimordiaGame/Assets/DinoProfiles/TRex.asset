@@ -12,14 +12,39 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abb9fa5d0b4c9904c82fdff2e90ef34f, type: 3}
   m_Name: TRex
   m_EditorClassIdentifier: Assembly-CSharp::DinoProfile
+  behaviour: 0
+  prefersPlayer: 1
   sightRange: 25
   sightAngle: 70
   hearingRadius: 6
   noiseMemory: 3
-  attackDamage: 10
+  giveUpTimer: 5
+  leashRange: 35
   attackRange: 2
   attackCooldown: 1.5
+  attackDamage: 10
   moveSpeed: 4.5
   health: 100
   xpReward: 10
-  isPredator: 1
+  drops:
+  - partName: Apex Fang
+    minAmount: 1
+    maxAmount: 1
+    chance: 1
+    isRare: 0
+  - partName: Bone
+    minAmount: 3
+    maxAmount: 5
+    chance: 1
+    isRare: 0
+  - partName: Hide
+    minAmount: 2
+    maxAmount: 3
+    chance: 1
+    isRare: 0
+  - partName: Rex Skull
+    minAmount: 1
+    maxAmount: 1
+    chance: 0.2
+    isRare: 1
+  isAlpha: 0

@@ -13,13 +13,38 @@ MonoBehaviour:
   m_Name: Stegosaurus
   m_EditorClassIdentifier: Assembly-CSharp::DinoProfile
   behaviour: 2
+  prefersPlayer: 1
   sightRange: 10
   sightAngle: 45
   hearingRadius: 8
   noiseMemory: 3
+  giveUpTimer: 5
+  leashRange: 35
   attackRange: 2
   attackCooldown: 1.5
   attackDamage: 10
   moveSpeed: 3
   health: 100
   xpReward: 10
+  drops:
+  - partName: Back-Plate
+    minAmount: 1
+    maxAmount: 1
+    chance: 1
+    isRare: 0
+  - partName: Bone
+    minAmount: 2
+    maxAmount: 4
+    chance: 1
+    isRare: 0
+  - partName: Hide
+    minAmount: 2
+    maxAmount: 4
+    chance: 1
+    isRare: 0
+  - partName: Twin Tail-Spike
+    minAmount: 1
+    maxAmount: 1
+    chance: 0.1
+    isRare: 1
+  isAlpha: 0

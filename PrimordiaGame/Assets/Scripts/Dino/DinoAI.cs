@@ -11,9 +11,12 @@ public class DinoAI : MonoBehaviour
     public float wanderPause  = 3f;
     public float wanderSpeed  = 2f;
 
+    [Header("Sensing")]
+    public float proximityAware = 25f;   // anything this close is sensed regardless of FOV
+
     private Transform currentTarget;
     private float lastAttackTime = -999f;
-    private float lastSensedTime = -999f;   // refreshed by sight OR hearing
+    private float lastSensedTime = -999f;   // refreshed by sight OR hearing OR proximity
     private float wanderTimer;
     private NavMeshAgent agent;
     private Animator animator;
@@ -30,26 +33,37 @@ public class DinoAI : MonoBehaviour
         animator = GetComponentInChildren<Animator>();
         agent.avoidancePriority = Random.Range(1, 99);
         spawnPos = transform.position;
+
+        if (player == null)
+        {
+            GameObject pgo = GameObject.FindWithTag("Player");
+            if (pgo != null) player = pgo.transform;
+        }
     }
 
     void Update()
     {
-        // ---- Target selection by priority (primary, else secondary) ----
-        currentTarget = ResolveTarget(profile.primaryTarget);
-        bool primarySensed = currentTarget != null && CanSense(currentTarget);
-        if (!primarySensed)
+        // ---- Target selection ----
+        bool isPredator = profile.behaviour == DinoBehaviour.PredatorHuntsPlayer
+                       || profile.behaviour == DinoBehaviour.PredatorHuntsHerbivores;
+
+        if (isPredator)
+            currentTarget = ChoosePredatorTarget();
+        // PassiveRetaliator & Flees: currentTarget set by OnAttacked / their own branch.
+
+        // ---- Drop the target if it has died (any behaviour) ----
+        if (currentTarget != null && IsDead(currentTarget))
         {
-            Transform secondary = ResolveTarget(profile.secondaryTarget);
-            if (secondary != null && CanSense(secondary))
-            {
-                currentTarget = secondary;
-            }
+            currentTarget = null;
+            if (state == State.Chase || state == State.Attack) state = State.Wander;
         }
 
-        // ---- Sense refresh: sight OR hearing keeps the chase alive ----
+        // ---- Sense refresh: sight OR hearing OR close proximity keeps engagement alive ----
         bool sees  = currentTarget != null && CanSee(currentTarget);
-        bool hears = currentTarget == player && CanHearNoise();   // noise events are player-driven
-        if (sees || hears) lastSensedTime = Time.time;
+        bool hears = currentTarget == player && CanHearNoise();
+        bool near  = currentTarget != null &&
+                     Vector3.Distance(transform.position, currentTarget.position) < proximityAware;
+        if (sees || hears || near) lastSensedTime = Time.time;
         bool recentlySensed = Time.time - lastSensedTime < profile.giveUpTimer;
 
         // ---- Leash: too far from spawn = give up regardless ----
@@ -62,11 +76,13 @@ public class DinoAI : MonoBehaviour
             case DinoBehaviour.PredatorHuntsHerbivores:
                 if (leashed)
                 {
-                    lastSensedTime = -999f;   // force-forget
+                    lastSensedTime = -999f;
                     if (state == State.Chase || state == State.Attack) state = State.Wander;
                 }
-                else if (currentTarget != null && recentlySensed)
+                else if (currentTarget != null && (recentlySensed || CanSense(currentTarget)))
                 {
+                    // have a target we can sense (now or recently) -> commit to combat,
+                    // interrupting wander immediately
                     float d = Vector3.Distance(transform.position, currentTarget.position);
                     state = ResolveCombatState(d, currentTarget);
                 }
@@ -83,24 +99,28 @@ public class DinoAI : MonoBehaviour
                 break;
 
             case DinoBehaviour.Flees:
-                currentTarget = player;
-                if (CanSee(player) || CanHearNoise()) state = State.Flee;
-                else if (state == State.Flee) state = State.Wander;
+                // Flee from the player if sensed, OR from whatever attacked us (currentTarget).
+                bool threatened = (player != null && !IsDead(player) && (CanSee(player) || CanHearNoise()))
+                               || (currentTarget != null && !IsDead(currentTarget) && recentlySensed);
+                if (threatened) state = State.Flee;
+                else if (state == State.Flee) { currentTarget = null; state = State.Wander; }
                 break;
 
             case DinoBehaviour.PassiveRetaliator:
                 if (leashed)
                 {
                     lastSensedTime = -999f;
+                    currentTarget = null;
                     if (state == State.Chase || state == State.Attack) state = State.Wander;
                 }
-                else if (currentTarget != null && recentlySensed)
+                else if (currentTarget != null && (recentlySensed || CanSense(currentTarget)))
                 {
                     float d = Vector3.Distance(transform.position, currentTarget.position);
                     state = ResolveCombatState(d, currentTarget);
                 }
                 else if (state == State.Chase || state == State.Attack)
                 {
+                    currentTarget = null;
                     state = State.Wander;
                 }
                 break;
@@ -110,23 +130,46 @@ public class DinoAI : MonoBehaviour
         animator.SetFloat("Speed", agent.velocity.magnitude);
     }
 
-    // ---- Resolve a target-type into an actual transform ----
-    Transform ResolveTarget(DinoProfile.TargetType type)
+    // ---- Auto-target: prefer player or herbivore per profile, switch when sensed ----
+    Transform ChoosePredatorTarget()
     {
-        switch (type)
+        Transform herb = FindNearestHerbivore();
+        bool herbOk   = herb != null && !IsDead(herb) && CanSense(herb);
+        bool playerOk = player != null && !IsDead(player) && CanSense(player);
+
+        if (profile.prefersPlayer)
         {
-            case DinoProfile.TargetType.Player:    return player;
-            case DinoProfile.TargetType.Herbivore: return FindNearestHerbivore();
-            default:                               return null;
+            if (playerOk) return player;
+            if (herbOk)   return herb;
         }
+        else
+        {
+            if (herbOk)   return herb;
+            if (playerOk) return player;
+        }
+
+        // keep an already-locked living target until the give-up timer lapses
+        if (currentTarget != null && !IsDead(currentTarget)) return currentTarget;
+        return null;
     }
 
-    // ---- Can this dino currently see OR hear the target? ----
+    bool IsDead(Transform t)
+    {
+        if (t == null) return true;
+        PlayerHealth php = t.GetComponent<PlayerHealth>();
+        if (php != null && php.IsDead) return true;
+        DinoHealth dh = t.GetComponent<DinoHealth>();
+        if (dh != null && dh.IsDead) return true;
+        return false;
+    }
+
+    // ---- Can this dino currently see OR hear OR feel (proximity) the target? ----
     bool CanSense(Transform t)
     {
         if (t == null) return false;
+        if (Vector3.Distance(transform.position, t.position) < proximityAware) return true;
         if (CanSee(t)) return true;
-        if (t == player && CanHearNoise()) return true;   // hearing applies to player noise
+        if (t == player && CanHearNoise()) return true;
         return false;
     }
 
@@ -206,10 +249,13 @@ public class DinoAI : MonoBehaviour
                 break;
 
             case State.Flee:
+                // Run from the attacker if there is one, otherwise from the player.
+                Transform threat = currentTarget != null ? currentTarget : player;
+                if (threat == null) { state = State.Wander; break; }
                 agent.isStopped = false;
                 agent.stoppingDistance = 0f;
                 agent.speed = profile.moveSpeed;
-                Vector3 away = (transform.position - player.position).normalized;
+                Vector3 away = (transform.position - threat.position).normalized;
                 agent.SetDestination(transform.position + away * 8f);
                 break;
         }
@@ -217,10 +263,10 @@ public class DinoAI : MonoBehaviour
 
     public void OnAttacked(Transform attacker)
     {
-        if (profile.behaviour == DinoBehaviour.PassiveRetaliator)
+        if (profile.behaviour == DinoBehaviour.PassiveRetaliator || profile.behaviour == DinoBehaviour.Flees)
         {
             currentTarget = attacker;
-            lastSensedTime = Time.time;   // retaliation counts as sensing
+            lastSensedTime = Time.time;   // being hit counts as sensing
         }
     }
 
@@ -235,6 +281,7 @@ public class DinoAI : MonoBehaviour
             bool isHerbivore = d.profile.behaviour == DinoBehaviour.PassiveRetaliator
                             || d.profile.behaviour == DinoBehaviour.Flees;
             if (!isHerbivore) continue;
+            if (IsDead(d.transform)) continue;
             float dist = Vector3.Distance(transform.position, d.transform.position);
             if (dist < best) { best = dist; nearest = d.transform; }
         }
@@ -270,7 +317,10 @@ public class DinoAI : MonoBehaviour
         if (to.magnitude > profile.sightRange) return false;
         if (Vector3.Angle(transform.forward, to) > profile.sightAngle) return false;
         if (Physics.Raycast(transform.position, to.normalized, out RaycastHit hit, profile.sightRange))
-            if (hit.transform != t) return false;
+        {
+            if (hit.transform != t && !hit.transform.IsChildOf(t) && !t.IsChildOf(hit.transform))
+                return false;
+        }
         return true;
     }
 

@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 340f6d03be93e6245a65a943fe6ce00c
+guid: d37c21a23fb91af4d86c0abc296abcb8
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
@@ -31,11 +31,11 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Armature|Velociraptor_Attack
-      takeName: Armature|Velociraptor_Attack
-      internalID: 4143700261437895409
+      name: Armature|Stegosaurus_Attack
+      takeName: Armature|Stegosaurus_Attack
+      internalID: 6481880008128093075
       firstFrame: 0
-      lastFrame: 20
+      lastFrame: 45
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -60,11 +60,11 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature|Velociraptor_Death
-      takeName: Armature|Velociraptor_Death
-      internalID: 587044913112085974
+      name: Armature|Stegosaurus_Death
+      takeName: Armature|Stegosaurus_Death
+      internalID: 8345993112607817138
       firstFrame: 0
-      lastFrame: 31
+      lastFrame: 38
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -89,11 +89,11 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature|Velociraptor_Idle
-      takeName: Armature|Velociraptor_Idle
-      internalID: -5871086038374619908
+      name: Armature|Stegosaurus_Idle
+      takeName: Armature|Stegosaurus_Idle
+      internalID: 2365668113189278568
       firstFrame: 0
-      lastFrame: 60
+      lastFrame: 61
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -118,11 +118,11 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature|Velociraptor_Jump
-      takeName: Armature|Velociraptor_Jump
-      internalID: 4845060526184193375
+      name: Armature|Stegosaurus_Jump
+      takeName: Armature|Stegosaurus_Jump
+      internalID: -8329314530482407579
       firstFrame: 0
-      lastFrame: 27
+      lastFrame: 35
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -147,11 +147,11 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature|Velociraptor_Run
-      takeName: Armature|Velociraptor_Run
-      internalID: -5154290312366767704
+      name: Armature|Stegosaurus_Run
+      takeName: Armature|Stegosaurus_Run
+      internalID: 781925953941865029
       firstFrame: 0
-      lastFrame: 13
+      lastFrame: 19
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -176,11 +176,11 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature|Velociraptor_Walk
-      takeName: Armature|Velociraptor_Walk
-      internalID: 359388479972869541
+      name: Armature|Stegosaurus_Walk
+      takeName: Armature|Stegosaurus_Walk
+      internalID: -6883705844951173334
       firstFrame: 0
-      lastFrame: 30
+      lastFrame: 70
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -266,7 +266,7 @@ ModelImporter:
     legStretch: 0.05
     feetSpacing: 0
     globalScale: 1
-    rootMotionBoneName: root
+    rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 0
     skeletonHasParents: 1
@@ -274,7 +274,7 @@ ModelImporter:
   autoGenerateAvatarMappingIfUnspecified: 1
   animationType: 2
   humanoidOversampling: 1
-  avatarSetup: 1
+  avatarSetup: 0
   addHumanoidExtraRootOnlyWhenUsingAvatar: 1
   importBlendShapeDeformPercent: 1
   remapMaterialsIfMaterialImportModeIsNone: 0

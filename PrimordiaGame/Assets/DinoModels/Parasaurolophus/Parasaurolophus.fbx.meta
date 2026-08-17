@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 340f6d03be93e6245a65a943fe6ce00c
+guid: fae18186c296ced49949a730dc1da04f
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
@@ -31,9 +31,9 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Armature|Velociraptor_Attack
-      takeName: Armature|Velociraptor_Attack
-      internalID: 4143700261437895409
+      name: Armature|Parasaurolophus_Attack
+      takeName: Armature|Parasaurolophus_Attack
+      internalID: -2519411750762977553
       firstFrame: 0
       lastFrame: 20
       wrapMode: 0
@@ -60,9 +60,9 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature|Velociraptor_Death
-      takeName: Armature|Velociraptor_Death
-      internalID: 587044913112085974
+      name: Armature|Parasaurolophus_Death
+      takeName: Armature|Parasaurolophus_Death
+      internalID: -7599328218847111632
       firstFrame: 0
       lastFrame: 31
       wrapMode: 0
@@ -89,9 +89,9 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature|Velociraptor_Idle
-      takeName: Armature|Velociraptor_Idle
-      internalID: -5871086038374619908
+      name: Armature|Parasaurolophus_Idle
+      takeName: Armature|Parasaurolophus_Idle
+      internalID: 2370080510497258867
       firstFrame: 0
       lastFrame: 60
       wrapMode: 0
@@ -118,11 +118,11 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature|Velociraptor_Jump
-      takeName: Armature|Velociraptor_Jump
-      internalID: 4845060526184193375
+      name: Armature|Parasaurolophus_Jump
+      takeName: Armature|Parasaurolophus_Jump
+      internalID: 989263718039919292
       firstFrame: 0
-      lastFrame: 27
+      lastFrame: 32
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -147,9 +147,9 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature|Velociraptor_Run
-      takeName: Armature|Velociraptor_Run
-      internalID: -5154290312366767704
+      name: Armature|Parasaurolophus_Run
+      takeName: Armature|Parasaurolophus_Run
+      internalID: 1261881600532001486
       firstFrame: 0
       lastFrame: 13
       wrapMode: 0
@@ -176,11 +176,11 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature|Velociraptor_Walk
-      takeName: Armature|Velociraptor_Walk
-      internalID: 359388479972869541
+      name: Armature|Parasaurolophus_Walk
+      takeName: Armature|Parasaurolophus_Walk
+      internalID: -4517929548200820678
       firstFrame: 0
-      lastFrame: 30
+      lastFrame: 28
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -266,7 +266,7 @@ ModelImporter:
     legStretch: 0.05
     feetSpacing: 0
     globalScale: 1
-    rootMotionBoneName: root
+    rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 0
     skeletonHasParents: 1
@@ -274,7 +274,7 @@ ModelImporter:
   autoGenerateAvatarMappingIfUnspecified: 1
   animationType: 2
   humanoidOversampling: 1
-  avatarSetup: 1
+  avatarSetup: 0
   addHumanoidExtraRootOnlyWhenUsingAvatar: 1
   importBlendShapeDeformPercent: 1
   remapMaterialsIfMaterialImportModeIsNone: 0
