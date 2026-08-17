@@ -27,6 +27,7 @@
 *.mdb
 *.opendb
 *.VC.db
+*.slnx
 
 # Generated debug-symbol metadata
 *.pidb.meta
