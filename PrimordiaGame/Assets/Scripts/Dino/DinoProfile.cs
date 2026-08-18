@@ -57,4 +57,9 @@ public class DinoProfile : ScriptableObject
 
     [Header("Alpha")]
     public bool isAlpha = false;        // alphas force all rare drops to 100%
+    public float alphaXpMult = 3f;   // alphas grant 3x XP
+    public float alphaHealthMult = 2.5f;
+    public float alphaDamageMult = 1.8f;
+    public float alphaScaleMult  = 1.4f;
+    public Color alphaTint = new Color(0.6f, 0.1f, 0.1f);  // dark red — tune per taste       // alphas force all rare drops to 100%
 }

@@ -8,20 +8,21 @@ public class DinoHealth : MonoBehaviour
 
     private float currentHealth;
     private Animator animator;
+    private Transform lastAttacker;   // who dealt the most recent damage
 
     void Start()
     {
         currentHealth = profile.health;
+        if (profile.isAlpha) currentHealth *= profile.alphaHealthMult;
         animator = GetComponentInChildren<Animator>();
     }
 
-    // attacker = who dealt the damage (player or another dino); can be null
     public void TakeDamage(float amount, Transform attacker)
     {
         if (IsDead) return;
         currentHealth -= amount;
+        lastAttacker = attacker;   // remember who hit us
 
-        // tell my own AI I was hit (for passive retaliators)
         DinoAI ai = GetComponent<DinoAI>();
         if (ai != null && attacker != null) ai.OnAttacked(attacker);
 
@@ -33,10 +34,21 @@ public class DinoHealth : MonoBehaviour
         IsDead = true;
         Debug.Log(name + " died!");
 
-        // spawn loot drops (placeholder cubes for now)
+        // spawn loot drops
         DinoLoot loot = GetComponent<DinoLoot>();
         if (loot != null) loot.DropLoot();
 
+        // grant XP ONLY if the player landed the killing blow
+        if (lastAttacker != null && lastAttacker.CompareTag("Player"))
+        {
+            PlayerProgression prog = lastAttacker.GetComponent<PlayerProgression>();
+            if (prog != null)
+            {
+                int xp = profile.xpReward;
+                if (profile.isAlpha) xp = Mathf.RoundToInt(xp * profile.alphaXpMult);
+                prog.AddXP(xp);
+            }
+        }
         DinoAI ai = GetComponent<DinoAI>();
         if (ai != null) ai.enabled = false;
         NavMeshAgent agent = GetComponent<NavMeshAgent>();
@@ -47,6 +59,10 @@ public class DinoHealth : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.K)) TakeDamage(9999, null);  // TEMP test kill
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            GameObject pgo = GameObject.FindWithTag("Player");
+            TakeDamage(9999, pgo != null ? pgo.transform : null);
+        }
     }
 }
