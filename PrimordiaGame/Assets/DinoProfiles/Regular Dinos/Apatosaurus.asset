@@ -22,7 +22,7 @@ MonoBehaviour:
   leashRange: 35
   attackRange: 10
   attackCooldown: 1.5
-  attackDamage: 80
+  attackDamage: 100
   moveSpeed: 2.5
   health: 10000
   xpReward: 80
@@ -48,3 +48,8 @@ MonoBehaviour:
     chance: 0.1
     isRare: 1
   isAlpha: 0
+  alphaXpMult: 3
+  alphaHealthMult: 2.5
+  alphaDamageMult: 1.8
+  alphaScaleMult: 1.4
+  alphaTint: {r: 0.6, g: 0.1, b: 0.1, a: 1}

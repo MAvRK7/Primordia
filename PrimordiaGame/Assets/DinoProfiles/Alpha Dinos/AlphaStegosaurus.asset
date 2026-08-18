@@ -22,9 +22,9 @@ MonoBehaviour:
   leashRange: 35
   attackRange: 2
   attackCooldown: 1.5
-  attackDamage: 10
+  attackDamage: 80
   moveSpeed: 3
-  health: 100
+  health: 1500
   xpReward: 10
   drops:
   - partName: Back-Plate
@@ -48,6 +48,7 @@ MonoBehaviour:
     chance: 0.1
     isRare: 1
   isAlpha: 1
+  alphaXpMult: 3
   alphaHealthMult: 2.5
   alphaDamageMult: 1.8
   alphaScaleMult: 1.4

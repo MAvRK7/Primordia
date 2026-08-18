@@ -22,9 +22,9 @@ MonoBehaviour:
   leashRange: 35
   attackRange: 3
   attackCooldown: 1.5
-  attackDamage: 20
+  attackDamage: 25
   moveSpeed: 7
-  health: 100
+  health: 200
   xpReward: 10
   drops:
   - partName: Sickle Claw
@@ -43,6 +43,7 @@ MonoBehaviour:
     chance: 0.08
     isRare: 1
   isAlpha: 1
+  alphaXpMult: 3
   alphaHealthMult: 2.5
   alphaDamageMult: 1.8
   alphaScaleMult: 1.4

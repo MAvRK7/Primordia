@@ -14,17 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DinoProfile
   behaviour: 0
   prefersPlayer: 1
-  sightRange: 25
-  sightAngle: 70
+  sightRange: 50
+  sightAngle: 90
   hearingRadius: 6
   noiseMemory: 3
   giveUpTimer: 5
   leashRange: 35
   attackRange: 2
   attackCooldown: 1.5
-  attackDamage: 10
+  attackDamage: 250
   moveSpeed: 4.5
-  health: 100
+  health: 7000
   xpReward: 10
   drops:
   - partName: Apex Fang
