@@ -28,6 +28,7 @@
 *.opendb
 *.VC.db
 *.slnx
+*.blend
 
 # Generated debug-symbol metadata
 *.pidb.meta
