@@ -8,6 +8,7 @@ public class DinoHealth : MonoBehaviour, IDamageable
 
     private float currentHealth;
     private Animator animator;
+    private Transform lastAttacker;   // who dealt the most recent damage
 
     public float CurrentHealth => currentHealth;
 
@@ -17,10 +18,10 @@ public class DinoHealth : MonoBehaviour, IDamageable
     void Start()
     {
         currentHealth = profile.health;
+        if (profile.isAlpha) currentHealth *= profile.alphaHealthMult;
         animator = GetComponentInChildren<Animator>();
     }
 
-    // attacker = who dealt the damage (player or another dino); can be null
     public void TakeDamage(float amount, Transform attacker)
     {
         ApplyHit(new CombatHit(amount, transform.position, Vector3.up, attacker));
@@ -30,9 +31,9 @@ public class DinoHealth : MonoBehaviour, IDamageable
     {
         if (IsDead || hit.Damage <= 0f) return;
         currentHealth -= hit.Damage;
+        lastAttacker = hit.Attacker;
         damaged?.Invoke(hit);
 
-        // tell my own AI I was hit (for passive retaliators)
         DinoAI ai = GetComponent<DinoAI>();
         if (ai != null && hit.Attacker != null) ai.OnAttacked(hit.Attacker);
 
@@ -43,6 +44,22 @@ public class DinoHealth : MonoBehaviour, IDamageable
     {
         IsDead = true;
         Debug.Log(name + " died!");
+
+        // spawn loot drops
+        DinoLoot loot = GetComponent<DinoLoot>();
+        if (loot != null) loot.DropLoot();
+
+        // grant XP ONLY if the player landed the killing blow
+        if (lastAttacker != null && lastAttacker.CompareTag("Player"))
+        {
+            PlayerProgression prog = lastAttacker.GetComponent<PlayerProgression>();
+            if (prog != null)
+            {
+                int xp = profile.xpReward;
+                if (profile.isAlpha) xp = Mathf.RoundToInt(xp * profile.alphaXpMult);
+                prog.AddXP(xp);
+            }
+        }
         DinoAI ai = GetComponent<DinoAI>();
         if (ai != null) ai.enabled = false;
         NavMeshAgent agent = GetComponent<NavMeshAgent>();
@@ -52,5 +69,14 @@ public class DinoHealth : MonoBehaviour, IDamageable
             hitCollider.enabled = false;
         died?.Invoke();
         Destroy(gameObject, 5f);
+    }
+
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            GameObject pgo = GameObject.FindWithTag("Player");
+            TakeDamage(9999, pgo != null ? pgo.transform : null);
+        }
     }
 }

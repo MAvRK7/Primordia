@@ -10,16 +10,36 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: abb9fa5d0b4c9904c82fdff2e90ef34f, type: 3}
-  m_Name: Stegosaurus
+  m_Name: Parasaurolophus
   m_EditorClassIdentifier: Assembly-CSharp::DinoProfile
-  behaviour: 2
-  sightRange: 10
-  sightAngle: 45
-  hearingRadius: 8
+  behaviour: 3
+  prefersPlayer: 1
+  sightRange: 12
+  sightAngle: 60
+  hearingRadius: 10
   noiseMemory: 3
+  giveUpTimer: 5
+  leashRange: 35
   attackRange: 2
   attackCooldown: 1.5
   attackDamage: 10
-  moveSpeed: 3
-  health: 100
+  moveSpeed: 9
+  health: 150
   xpReward: 10
+  drops:
+  - partName: crest
+    minAmount: 1
+    maxAmount: 1
+    chance: 1
+    isRare: 0
+  - partName: Hide
+    minAmount: 1
+    maxAmount: 1
+    chance: 1
+    isRare: 0
+  - partName: Pristine Crest
+    minAmount: 1
+    maxAmount: 1
+    chance: 0.03
+    isRare: 1
+  isAlpha: 0

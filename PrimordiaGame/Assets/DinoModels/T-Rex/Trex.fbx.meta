@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 340f6d03be93e6245a65a943fe6ce00c
+guid: ebd9940d954576841bf9376af1c32416
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
@@ -31,11 +31,11 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Armature|Velociraptor_Attack
-      takeName: Armature|Velociraptor_Attack
-      internalID: 4143700261437895409
+      name: Armature|TRex_Attack
+      takeName: Armature|TRex_Attack
+      internalID: -8723934359920534599
       firstFrame: 0
-      lastFrame: 20
+      lastFrame: 28
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -60,11 +60,11 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature|Velociraptor_Death
-      takeName: Armature|Velociraptor_Death
-      internalID: 587044913112085974
+      name: Armature|TRex_Death
+      takeName: Armature|TRex_Death
+      internalID: -1309303606958044107
       firstFrame: 0
-      lastFrame: 31
+      lastFrame: 38
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -89,9 +89,9 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature|Velociraptor_Idle
-      takeName: Armature|Velociraptor_Idle
-      internalID: -5871086038374619908
+      name: Armature|TRex_Idle
+      takeName: Armature|TRex_Idle
+      internalID: -9213415508901047716
       firstFrame: 0
       lastFrame: 60
       wrapMode: 0
@@ -118,11 +118,11 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature|Velociraptor_Jump
-      takeName: Armature|Velociraptor_Jump
-      internalID: 4845060526184193375
+      name: Armature|TRex_Jump
+      takeName: Armature|TRex_Jump
+      internalID: 5505537181921623897
       firstFrame: 0
-      lastFrame: 27
+      lastFrame: 35
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -147,11 +147,11 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature|Velociraptor_Run
-      takeName: Armature|Velociraptor_Run
-      internalID: -5154290312366767704
+      name: Armature|TRex_Run
+      takeName: Armature|TRex_Run
+      internalID: 1692518076318030960
       firstFrame: 0
-      lastFrame: 13
+      lastFrame: 22
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -176,11 +176,11 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Armature|Velociraptor_Walk
-      takeName: Armature|Velociraptor_Walk
-      internalID: 359388479972869541
+      name: Armature|TRex_Walk
+      takeName: Armature|TRex_Walk
+      internalID: -1235954696588916024
       firstFrame: 0
-      lastFrame: 30
+      lastFrame: 33
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -266,7 +266,7 @@ ModelImporter:
     legStretch: 0.05
     feetSpacing: 0
     globalScale: 1
-    rootMotionBoneName: root
+    rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 0
     skeletonHasParents: 1
@@ -274,7 +274,7 @@ ModelImporter:
   autoGenerateAvatarMappingIfUnspecified: 1
   animationType: 2
   humanoidOversampling: 1
-  avatarSetup: 1
+  avatarSetup: 0
   addHumanoidExtraRootOnlyWhenUsingAvatar: 1
   importBlendShapeDeformPercent: 1
   remapMaterialsIfMaterialImportModeIsNone: 0

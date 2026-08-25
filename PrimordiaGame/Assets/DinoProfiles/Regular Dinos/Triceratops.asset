@@ -10,16 +10,36 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: abb9fa5d0b4c9904c82fdff2e90ef34f, type: 3}
-  m_Name: TRex
+  m_Name: Triceratops
   m_EditorClassIdentifier: Assembly-CSharp::DinoProfile
-  sightRange: 25
-  sightAngle: 70
-  hearingRadius: 6
+  behaviour: 2
+  prefersPlayer: 1
+  sightRange: 12
+  sightAngle: 50
+  hearingRadius: 8
   noiseMemory: 3
-  attackDamage: 10
+  giveUpTimer: 5
+  leashRange: 35
   attackRange: 2
   attackCooldown: 1.5
-  moveSpeed: 4.5
-  health: 100
+  attackDamage: 60
+  moveSpeed: 3.5
+  health: 2000
   xpReward: 10
-  isPredator: 1
+  drops:
+  - partName: Horn
+    minAmount: 1
+    maxAmount: 2
+    chance: 1
+    isRare: 0
+  - partName: bone
+    minAmount: 1
+    maxAmount: 1
+    chance: 1
+    isRare: 0
+  - partName: Flawless Horn
+    minAmount: 1
+    maxAmount: 1
+    chance: 0.06
+    isRare: 1
+  isAlpha: 0
