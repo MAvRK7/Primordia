@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Forwards a child trigger collider to its owning melee weapon.
+/// Forwards blade trigger contacts to its owning melee weapon.
 /// </summary>
 [DisallowMultipleComponent]
 [RequireComponent(typeof(Collider))]

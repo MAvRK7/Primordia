@@ -137,7 +137,7 @@ Transform:
   m_GameObject: {fileID: 4030267573955128855}
   serializedVersion: 2
   m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.018, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -251,7 +251,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0ad34abafad169848a38072baa96cdb2, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Unity.XR.Interaction.Toolkit::UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable
   m_InteractionManager: {fileID: 0}
   m_Colliders: []
@@ -477,17 +477,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7b804cee2431044629d572689896b5b6, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Melee
   m_Definition: {fileID: 11400000, guid: c3173c50f189fd84fa2efde735a5e6a1, type: 2}
   m_GrabInteractable: {fileID: 5679826842073989990}
   m_Hitbox: {fileID: 7579453365831188923}
-  m_WindupDuration: 0.05
-  m_ActiveDuration: 0.18
-  m_Animator: {fileID: 0}
-  m_SwingTrigger: Swing
+  m_MinimumHitSpeed: 1
   m_AudioSource: {fileID: 418363977114487771}
-  m_SwingClip: {fileID: 0}
   m_HitClip: {fileID: 0}
   m_HitHapticAmplitude: 0.25
   m_HitHapticDuration: 0.04
@@ -555,7 +551,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 298f119bf9b9e494091c0a3c127f6154, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MeleeHitbox
   m_Owner: {fileID: 6911656959725141030}
   m_HitCollider: {fileID: 6442350481678771416}

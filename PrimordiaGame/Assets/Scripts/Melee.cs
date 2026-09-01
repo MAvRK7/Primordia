@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
@@ -6,8 +5,8 @@ using UnityEngine.XR.Interaction.Toolkit.Interactables;
 using UnityEngine.XR.Interaction.Toolkit.Interactors;
 
 /// <summary>
-/// Animation-driven melee weapon with a short, explicit damage window.
-/// Each target can only be damaged once per swing.
+/// A physically swung melee weapon. Blade contacts only deal damage while the
+/// weapon is held by an input interactor and moving above the impact threshold.
 /// </summary>
 [DisallowMultipleComponent]
 [RequireComponent(typeof(XRGrabInteractable))]
@@ -19,31 +18,23 @@ public sealed class Melee : Item
     [Header("Interaction")]
     [SerializeField] XRGrabInteractable m_GrabInteractable;
     [SerializeField] MeleeHitbox m_Hitbox;
-
-    [Header("Swing Timing")]
-    [SerializeField, Min(0f)] float m_WindupDuration = 0.05f;
-    [SerializeField, Min(0.01f)] float m_ActiveDuration = 0.18f;
+    [SerializeField, Min(0f)] float m_MinimumHitSpeed = 1f;
 
     [Header("Feedback")]
-    [SerializeField] Animator m_Animator;
-    [SerializeField] string m_SwingTrigger = "Swing";
     [SerializeField] AudioSource m_AudioSource;
-    [SerializeField] AudioClip m_SwingClip;
     [SerializeField] AudioClip m_HitClip;
     [SerializeField, Range(0f, 1f)] float m_HitHapticAmplitude = 0.25f;
     [SerializeField, Min(0f)] float m_HitHapticDuration = 0.04f;
 
-    readonly HashSet<IDamageable> m_HitTargets = new HashSet<IDamageable>();
+    readonly Dictionary<IDamageable, float> m_NextHitTimes = new Dictionary<IDamageable, float>();
 
-    bool m_IsSwinging;
-    bool m_DamageWindowOpen;
-    float m_NextSwingTime;
-    Transform m_Attacker;
     XRBaseInputInteractor m_ActiveInteractor;
+    Transform m_HolderRoot;
+    Vector3 m_PreviousBladePosition;
+    Vector3 m_BladeVelocity;
+    bool m_HasBladeSample;
 
     public WeaponDefinition Definition => m_Definition;
-    public bool IsSwinging => m_IsSwinging;
-    public bool DamageWindowOpen => m_DamageWindowOpen;
 
     void Awake()
     {
@@ -53,90 +44,94 @@ public sealed class Melee : Item
         if (m_AudioSource == null)
             m_AudioSource = GetComponent<AudioSource>();
 
-        SetDamageWindow(false);
+        SetHitboxActive(false);
     }
 
     void OnEnable()
     {
-        if (m_GrabInteractable != null)
-            m_GrabInteractable.activated.AddListener(HandleActivated);
+        if (m_GrabInteractable == null)
+            return;
+
+        m_GrabInteractable.selectEntered.AddListener(HandleSelectEntered);
+        m_GrabInteractable.selectExited.AddListener(HandleSelectExited);
     }
 
     void OnDisable()
     {
         if (m_GrabInteractable != null)
-            m_GrabInteractable.activated.RemoveListener(HandleActivated);
-
-        StopAllCoroutines();
-        m_IsSwinging = false;
-        m_ActiveInteractor = null;
-        m_HitTargets.Clear();
-        SetDamageWindow(false);
-    }
-
-    void HandleActivated(ActivateEventArgs args)
-    {
-        BeginSwing(
-            args.interactorObject.transform,
-            args.interactorObject as XRBaseInputInteractor);
-    }
-
-    public bool BeginSwing(Transform attacker = null)
-    {
-        return BeginSwing(attacker, null);
-    }
-
-    bool BeginSwing(Transform attacker, XRBaseInputInteractor interactor)
-    {
-        if (m_Definition == null ||
-            m_Definition.Type != WeaponType.Melee ||
-            m_IsSwinging ||
-            Time.time < m_NextSwingTime)
         {
-            return false;
+            m_GrabInteractable.selectEntered.RemoveListener(HandleSelectEntered);
+            m_GrabInteractable.selectExited.RemoveListener(HandleSelectExited);
         }
 
-        m_Attacker = attacker != null ? attacker : transform;
-        m_ActiveInteractor = interactor;
-        m_NextSwingTime = Time.time + 1f / m_Definition.AttacksPerSecond;
-        StartCoroutine(SwingRoutine());
-        return true;
+        Disarm();
     }
 
-    IEnumerator SwingRoutine()
+    void FixedUpdate()
     {
-        m_IsSwinging = true;
-        m_HitTargets.Clear();
+        if (!IsHeldByActiveInteractor())
+        {
+            m_BladeVelocity = Vector3.zero;
+            m_HasBladeSample = false;
+            return;
+        }
 
-        if (m_Animator != null && !string.IsNullOrWhiteSpace(m_SwingTrigger))
-            m_Animator.SetTrigger(m_SwingTrigger);
+        var bladePosition = GetBladeSamplePosition();
+        if (m_HasBladeSample && Time.fixedDeltaTime > Mathf.Epsilon)
+            m_BladeVelocity = (bladePosition - m_PreviousBladePosition) / Time.fixedDeltaTime;
+        else
+            m_BladeVelocity = Vector3.zero;
 
-        PlayOneShot(m_SwingClip);
-        PlayerNoise.EmitNoise(transform.position, m_Definition.NoiseRange);
+        m_PreviousBladePosition = bladePosition;
+        m_HasBladeSample = true;
+    }
 
-        if (m_WindupDuration > 0f)
-            yield return new WaitForSeconds(m_WindupDuration);
+    void HandleSelectEntered(SelectEnterEventArgs args)
+    {
+        if (args.interactorObject is not XRBaseInputInteractor inputInteractor)
+        {
+            Disarm();
+            return;
+        }
 
-        SetDamageWindow(true);
-        yield return new WaitForSeconds(m_ActiveDuration);
-        SetDamageWindow(false);
+        m_ActiveInteractor = inputInteractor;
+        m_HolderRoot = inputInteractor.transform.root;
+        m_NextHitTimes.Clear();
+        SetHitboxActive(true);
+        ResetBladeSample();
+    }
 
-        m_IsSwinging = false;
-        m_ActiveInteractor = null;
+    void HandleSelectExited(SelectExitEventArgs args)
+    {
+        if (ReferenceEquals(args.interactorObject, m_ActiveInteractor))
+            Disarm();
     }
 
     internal void RegisterHit(Collider other, Collider sourceCollider)
     {
-        if (!m_DamageWindowOpen || other == null || other.transform.IsChildOf(transform))
-            return;
-
-        if (!CombatDamageResolver.TryGetDamageable(other, out var target) ||
-            m_HitTargets.Contains(target))
+        if (!IsHeldByActiveInteractor() ||
+            m_Definition == null ||
+            m_Definition.Type != WeaponType.Melee ||
+            other == null ||
+            other.transform.IsChildOf(transform) ||
+            m_BladeVelocity.magnitude < m_MinimumHitSpeed)
         {
             return;
         }
 
-        m_HitTargets.Add(target);
+        if (m_HolderRoot != null &&
+            (other.transform == m_HolderRoot || other.transform.IsChildOf(m_HolderRoot)))
+        {
+            return;
+        }
+
+        if (!CombatDamageResolver.TryGetDamageable(other, out var target))
+            return;
+
+        if (m_NextHitTimes.TryGetValue(target, out var nextHitTime) && Time.time < nextHitTime)
+            return;
+
+        m_NextHitTimes[target] = Time.time + 1f / m_Definition.AttacksPerSecond;
 
         var origin = sourceCollider != null
             ? sourceCollider.bounds.center
@@ -144,23 +139,55 @@ public sealed class Melee : Item
         var point = other.ClosestPoint(origin);
         var normal = point - origin;
         if (normal.sqrMagnitude <= Mathf.Epsilon)
-            normal = -transform.forward;
+            normal = -m_BladeVelocity;
 
         target.ApplyHit(new CombatHit(
             m_Definition.Damage,
             point,
             normal,
-            m_Attacker));
+            m_ActiveInteractor.transform));
 
         PlayOneShot(m_HitClip);
-        m_ActiveInteractor?.SendHapticImpulse(m_HitHapticAmplitude, m_HitHapticDuration);
+        PlayerNoise.EmitNoise(point, m_Definition.NoiseRange);
+        m_ActiveInteractor.SendHapticImpulse(m_HitHapticAmplitude, m_HitHapticDuration);
     }
 
-    void SetDamageWindow(bool open)
+    bool IsHeldByActiveInteractor()
     {
-        m_DamageWindowOpen = open;
+        return m_ActiveInteractor != null &&
+            m_GrabInteractable != null &&
+            m_GrabInteractable.interactorsSelecting.Contains(m_ActiveInteractor);
+    }
+
+    Vector3 GetBladeSamplePosition()
+    {
+        var hitCollider = m_Hitbox != null ? m_Hitbox.HitCollider : null;
+        return hitCollider != null
+            ? hitCollider.bounds.center
+            : transform.position;
+    }
+
+    void ResetBladeSample()
+    {
+        m_PreviousBladePosition = GetBladeSamplePosition();
+        m_BladeVelocity = Vector3.zero;
+        m_HasBladeSample = true;
+    }
+
+    void Disarm()
+    {
+        m_ActiveInteractor = null;
+        m_HolderRoot = null;
+        m_BladeVelocity = Vector3.zero;
+        m_HasBladeSample = false;
+        m_NextHitTimes.Clear();
+        SetHitboxActive(false);
+    }
+
+    void SetHitboxActive(bool active)
+    {
         if (m_Hitbox != null)
-            m_Hitbox.SetActive(open);
+            m_Hitbox.SetActive(active);
     }
 
     void PlayOneShot(AudioClip clip)
@@ -169,27 +196,9 @@ public sealed class Melee : Item
             m_AudioSource.PlayOneShot(clip);
     }
 
-    /// <summary>
-    /// Animation events can call this when a custom weapon animation controls timing.
-    /// </summary>
-    public void OpenDamageWindow()
-    {
-        if (m_IsSwinging)
-            SetDamageWindow(true);
-    }
-
-    /// <summary>
-    /// Animation events can call this when a custom weapon animation controls timing.
-    /// </summary>
-    public void CloseDamageWindow()
-    {
-        SetDamageWindow(false);
-    }
-
     void OnValidate()
     {
-        m_WindupDuration = Mathf.Max(0f, m_WindupDuration);
-        m_ActiveDuration = Mathf.Max(0.01f, m_ActiveDuration);
+        m_MinimumHitSpeed = Mathf.Max(0f, m_MinimumHitSpeed);
         m_HitHapticDuration = Mathf.Max(0f, m_HitHapticDuration);
     }
 }

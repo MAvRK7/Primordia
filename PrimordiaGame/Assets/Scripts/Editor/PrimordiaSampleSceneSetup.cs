@@ -134,6 +134,14 @@ public static class PrimordiaSampleSceneSetup
         Require(player != null, "SampleScene has no Player root.");
         Require(player.GetComponent<PlayerHealth>() != null, "PlayerHealth is missing from the Player root.");
         Require(player.GetComponent<PlayerNoise>() != null, "PlayerNoise is missing from the Player root.");
+        Require(player.GetComponentsInChildren<XRBaseInputInteractor>(true)
+                .All(interactor =>
+                {
+                    var hideController = new SerializedObject(interactor)
+                        .FindProperty("m_HideControllerOnSelect");
+                    return hideController == null || !hideController.boolValue;
+                }),
+            "A controller interactor hides the low-poly hand while holding an object.");
         var bodyInventory = player.GetComponentInChildren<BodyInventoryRig>(true);
         Require(bodyInventory != null,
             "The body inventory is not using head-relative tracking.");
@@ -187,8 +195,7 @@ public static class PrimordiaSampleSceneSetup
         }
 
         profile.behaviour = DinoBehaviour.PredatorHuntsPlayer;
-        profile.primaryTarget = DinoProfile.TargetType.Player;
-        profile.secondaryTarget = DinoProfile.TargetType.None;
+        profile.prefersPlayer = true;
         profile.sightRange = 18f;
         profile.sightAngle = 80f;
         profile.hearingRadius = 30f;
@@ -440,13 +447,51 @@ public static class PrimordiaSampleSceneSetup
 
         if (expectBladeAlongGrip)
         {
-            Require(Vector3.Angle(grab.attachTransform.forward, weapon.transform.up) < 1f,
+            Require(Vector3.Distance(
+                    grab.attachTransform.localPosition,
+                    new Vector3(0f, 0.018f, 0f)) < 0.0001f,
+                "The knife handle is not seated inside the low-poly hand's palm.");
+            Require(Quaternion.Angle(
+                    grab.attachTransform.localRotation,
+                    Quaternion.Euler(-90f, 0f, 0f)) < 1f,
                 "The knife blade is not aligned with the hand's forward grip direction.");
+
+            var melee = weapon.GetComponent<Melee>();
+            var hitbox = weapon.GetComponentInChildren<MeleeHitbox>(true);
+            var hitCollider = hitbox != null ? hitbox.HitCollider : null;
+            Require(melee != null && melee.Definition != null,
+                "The knife has no melee definition.");
+            Require(Mathf.Approximately(melee.Definition.Damage, 12f),
+                "The knife no longer deals the expected flat 12 damage.");
+            Require(Mathf.Approximately(melee.Definition.AttacksPerSecond, 2f),
+                "The knife no longer has the expected 0.5 second per-target hit cooldown.");
+            Require(hitCollider != null && hitCollider.isTrigger && !hitCollider.enabled,
+                "The knife blade hitbox must be a disabled-by-default trigger collider.");
+
+            var serializedMelee = new SerializedObject(melee);
+            Require(Mathf.Approximately(
+                    serializedMelee.FindProperty("m_MinimumHitSpeed").floatValue,
+                    1f),
+                "The knife minimum physical hit speed is not 1 m/s.");
         }
         else
         {
-            Require(Quaternion.Angle(grab.attachTransform.localRotation, Quaternion.identity) < 1f,
-                "The revolver still contains the old controller-model rotation offset.");
+            Require(Vector3.Distance(
+                    grab.attachTransform.localPosition,
+                    new Vector3(0f, -0.029f, -0.046f)) < 0.0001f,
+                "The revolver handle is not seated inside the low-poly hand's palm.");
+            Require(Quaternion.Angle(
+                    grab.attachTransform.localRotation,
+                    Quaternion.Euler(0f, 180f, 0f)) < 1f,
+                "The revolver does not face forward in the controller grip.");
+
+            var ranged = weapon.GetComponent<Ranged>();
+            var serializedRanged = new SerializedObject(ranged);
+            var muzzle = serializedRanged.FindProperty("m_FirePoint").objectReferenceValue as Transform;
+            Require(muzzle != null, "The revolver has no muzzle transform.");
+            Require(Vector3.Angle(muzzle.forward, weapon.transform.forward) < 1f &&
+                muzzle.localPosition.z > grab.attachTransform.localPosition.z,
+                "The revolver muzzle and hitscan direction do not align with the barrel.");
         }
     }
 
