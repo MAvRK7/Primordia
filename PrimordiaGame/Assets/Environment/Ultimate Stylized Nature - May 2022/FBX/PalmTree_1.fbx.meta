@@ -3,12 +3,22 @@ guid: 47819607b39ce49b68a201d2a1ecf3eb
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: PalmTree_Leaves
+    second: {fileID: 2100000, guid: 79c71b00500fa4dc58037aab47f063d3, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: PalmTree_Trunk
+    second: {fileID: 2100000, guid: 2f5c8487f9ece47039389a1362ac34ed, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
-    materialSearch: 1
-    materialLocation: 1
+    materialSearch: 2
+    materialLocation: 0
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
