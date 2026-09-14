@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DinoProfile
   behaviour: 0
   prefersPlayer: 1
-  sightRange: 50
+  sightRange: 500
   sightAngle: 90
   hearingRadius: 6
   noiseMemory: 3

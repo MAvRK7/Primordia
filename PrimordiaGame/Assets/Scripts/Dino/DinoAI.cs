@@ -300,10 +300,19 @@ public class DinoAI : MonoBehaviour
         foreach (DinoAI d in all)
         {
             if (d == this) continue;
+
+            // guard against a missing profile (could be null after a merge/reimport)
+            if (d.profile == null)
+            {
+                Debug.LogWarning($"{d.name} has NO profile assigned!");
+                continue;
+            }
+
             bool isHerbivore = d.profile.behaviour == DinoBehaviour.PassiveRetaliator
                             || d.profile.behaviour == DinoBehaviour.Flees;
             if (!isHerbivore) continue;
             if (IsDead(d.transform)) continue;
+
             float dist = Vector3.Distance(transform.position, d.transform.position);
             if (dist < best) { best = dist; nearest = d.transform; }
         }
