@@ -8,13 +8,15 @@ public class DinoHealth : MonoBehaviour
 
     private float currentHealth;
     private Animator animator;
-    private Transform lastAttacker;   // who dealt the most recent damage
+    private AudioSource audioSource;   // optional — no AudioSource means silent
+    private Transform lastAttacker;    // who dealt the most recent damage
 
     void Start()
     {
         currentHealth = profile.health;
         if (profile.isAlpha) currentHealth *= profile.alphaHealthMult;
         animator = GetComponentInChildren<Animator>();
+        audioSource = GetComponent<AudioSource>();   // optional
     }
 
     public void TakeDamage(float amount, Transform attacker)
@@ -26,13 +28,23 @@ public class DinoHealth : MonoBehaviour
         DinoAI ai = GetComponent<DinoAI>();
         if (ai != null && attacker != null) ai.OnAttacked(attacker);
 
-        if (currentHealth <= 0) Die();
+        if (currentHealth <= 0)
+        {
+            Die();
+        }
+        else
+        {
+            // hurt sound only for non-lethal hits (death has its own clip)
+            PlayClip(profile.hurtSound);
+        }
     }
 
     void Die()
     {
         IsDead = true;
         Debug.Log(name + " died!");
+
+        PlayClip(profile.deathSound);
 
         // spawn loot drops
         DinoLoot loot = GetComponent<DinoLoot>();
@@ -55,6 +67,13 @@ public class DinoHealth : MonoBehaviour
         if (agent != null && agent.isOnNavMesh) agent.isStopped = true;
         if (animator != null) animator.SetTrigger("Die");
         Destroy(gameObject, 5f);
+    }
+
+    // Plays a clip if we have both an AudioSource and a clip. Silent otherwise — never errors.
+    void PlayClip(AudioClip clip)
+    {
+        if (clip == null || audioSource == null) return;
+        audioSource.PlayOneShot(clip);
     }
 
     void Update()
