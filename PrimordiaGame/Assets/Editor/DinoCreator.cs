@@ -6,7 +6,7 @@ public static class DinoCreator
     // Spawns a normal dino prefab into the current scene at the Scene view's focus point.
     static void Spawn(string prefabName)
     {
-        string path = $"Assets/Prefabs/Dinos/{prefabName}.prefab";
+        string path = $"Assets/Prefabs/Dinos/Regular dinos/{prefabName}.prefab";
         SpawnFromPath(path, prefabName);
     }
 

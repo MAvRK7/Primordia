@@ -48,6 +48,14 @@ public class DinoProfile : ScriptableObject
     [Header("Movement")]
     public float moveSpeed = 3f;
 
+    [Header("Audio (all optional — null = silent)")]
+    public AudioClip idleSound;         // occasional call while wandering
+    public AudioClip chaseSound;        // once, on entering Chase
+    public AudioClip attackSound;       // on each actual attack
+    public AudioClip hurtSound;         // on taking non-lethal damage
+    public AudioClip deathSound;        // on death
+    public float idleSoundInterval = 8f;   // rough seconds between idle calls (randomized)
+
     [Header("Stats")]
     public float health = 45f;
     public int xpReward = 35;
