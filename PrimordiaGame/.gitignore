@@ -54,3 +54,6 @@ crashlytics-build.properties
 /[Aa]ssets/StreamingAssets/aa/
 /[Aa]ssets/AddressableAssetsData/*/*.bin*
 /[Aa]ssets/AddressableAssetsData/*/*.json
+
+# Local Claude-generated configuration and skills
+/.claude/
