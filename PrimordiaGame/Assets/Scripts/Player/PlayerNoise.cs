@@ -4,6 +4,18 @@ public class PlayerNoise : MonoBehaviour
 {
     public float moveNoise = 12f;   // how far the sound reaches while moving
 
+    Transform motionSource;
+    Vector3 previousPosition;
+    float nextMovementSample;
+
+    void Start()
+    {
+        var playerCamera = GetComponentInChildren<Camera>(true);
+        motionSource = playerCamera != null ? playerCamera.transform : transform;
+        previousPosition = motionSource.position;
+        nextMovementSample = Time.time + 0.25f;
+    }
+
     // Shared "drop-box" the dino can read directly
     public static Vector3 lastNoisePos;
     public static float   lastNoiseRange;
@@ -19,13 +31,18 @@ public class PlayerNoise : MonoBehaviour
         lastNoiseTime = Time.time;
     }
 
-    void Update()
+    void LateUpdate()
     {
-        // Am I moving? (any WASD held)
-        bool moving = Input.GetKey("w") || Input.GetKey("a")
-                   || Input.GetKey("s") || Input.GetKey("d");
+        if (Time.time < nextMovementSample)
+            return;
 
-        if (moving)
-            EmitNoise(transform.position, moveNoise);
+        // Observe actual motion so both thumbstick and room-scale movement work
+        // without calling the disabled legacy keyboard input backend.
+        var position = motionSource.position;
+        var movement = Vector3.ProjectOnPlane(position - previousPosition, Vector3.up);
+        if (movement.sqrMagnitude >= 0.01f)
+            EmitNoise(position, moveNoise);
+        previousPosition = position;
+        nextMovementSample = Time.time + 0.25f;
     }
 }
