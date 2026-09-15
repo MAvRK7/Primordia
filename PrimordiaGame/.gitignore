@@ -54,3 +54,7 @@ crashlytics-build.properties
 /[Aa]ssets/StreamingAssets/aa/
 /[Aa]ssets/AddressableAssetsData/*/*.bin*
 /[Aa]ssets/AddressableAssetsData/*/*.json
+
+.mcp.json 
+Assets/Plugins/NuGet/McpPlugin*
+
