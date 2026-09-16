@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.InputSystem;
 
 public class DinoHealth : MonoBehaviour, IDamageable
 {
@@ -10,8 +11,10 @@ public class DinoHealth : MonoBehaviour, IDamageable
     private Animator animator;
     private AudioSource audioSource;   // optional — no AudioSource means silent
     private Transform lastAttacker;    // who dealt the most recent damage
+    private Renderer[] corpseRenderers;
 
     public float CurrentHealth => currentHealth;
+    public BoxCollider CorpseCollider { get; private set; }
 
     public event System.Action<CombatHit> damaged;
     public event System.Action died;
@@ -74,13 +77,71 @@ public class DinoHealth : MonoBehaviour, IDamageable
         }
         DinoAI ai = GetComponent<DinoAI>();
         if (ai != null) ai.enabled = false;
+        DinoMover mover = GetComponent<DinoMover>();
+        if (mover != null) mover.enabled = false;
         NavMeshAgent agent = GetComponent<NavMeshAgent>();
-        if (agent != null && agent.isOnNavMesh) agent.isStopped = true;
+        if (agent != null) agent.enabled = false;
         if (animator != null) animator.SetTrigger("Die");
         foreach (var hitCollider in GetComponentsInChildren<Collider>())
             hitCollider.enabled = false;
+        EnableCorpseTrigger();
         died?.Invoke();
         Destroy(gameObject, 5f);
+    }
+
+    void EnableCorpseTrigger()
+    {
+        // A kinematic body allows trigger callbacks without making the corpse
+        // fall through the terrain after its solid colliders are disabled.
+        var body = GetComponent<Rigidbody>();
+        if (body == null) body = gameObject.AddComponent<Rigidbody>();
+        foreach (var corpseBody in GetComponentsInChildren<Rigidbody>(true))
+        {
+            corpseBody.isKinematic = true;
+            corpseBody.useGravity = false;
+        }
+
+        corpseRenderers = GetComponentsInChildren<Renderer>();
+        CorpseCollider = gameObject.AddComponent<BoxCollider>();
+        CorpseCollider.isTrigger = true;
+        UpdateCorpseBounds();
+    }
+
+    void LateUpdate()
+    {
+        if (CorpseCollider != null)
+            UpdateCorpseBounds();
+    }
+
+    void UpdateCorpseBounds()
+    {
+        // Fit in the dinosaur's local space, including scaled alpha variants,
+        // and follow renderer bounds as the death animation changes the pose.
+        var bounds = new Bounds(Vector3.up * 0.5f, Vector3.one);
+        var hasPoint = false;
+        foreach (var renderer in corpseRenderers)
+        {
+            if (renderer == null || !renderer.enabled ||
+                (renderer is not MeshRenderer && renderer is not SkinnedMeshRenderer))
+                continue;
+
+            var worldBounds = renderer.bounds;
+            for (var x = -1; x <= 1; x += 2)
+            for (var y = -1; y <= 1; y += 2)
+            for (var z = -1; z <= 1; z += 2)
+            {
+                var point = transform.InverseTransformPoint(worldBounds.center +
+                    Vector3.Scale(worldBounds.extents, new Vector3(x, y, z)));
+                if (!hasPoint)
+                {
+                    bounds = new Bounds(point, Vector3.zero);
+                    hasPoint = true;
+                }
+                else bounds.Encapsulate(point);
+            }
+        }
+        CorpseCollider.center = bounds.center;
+        CorpseCollider.size = Vector3.Max(bounds.size, Vector3.one * 0.1f);
     }
 
     // Plays a clip if we have both an AudioSource and a clip. Silent otherwise — never errors.
@@ -92,7 +153,7 @@ public class DinoHealth : MonoBehaviour, IDamageable
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.K))
+        if (Keyboard.current != null && Keyboard.current.kKey.wasPressedThisFrame)
         {
             GameObject pgo = GameObject.FindWithTag("Player");
             TakeDamage(9999, pgo != null ? pgo.transform : null);
