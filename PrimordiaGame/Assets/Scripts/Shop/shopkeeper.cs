@@ -81,6 +81,12 @@ public class Shopkeeper : MonoBehaviour
     public ShopManager shopManager;
     public ShopkeeperDialogue dialogue; // optional, but wires greetings/reactions if assigned
 
+    [Header("Campsite Interaction")]
+    public bool openWhenNearby;
+    [Min(0.5f)] public float interactionDistance = 3f;
+
+    private Camera playerCamera;
+
     [Header("Temporary Testing UI")]
     public GameObject shopMenu;
 
@@ -111,6 +117,31 @@ public class Shopkeeper : MonoBehaviour
 
     private void Update()
     {
+        // The campsite rig is spawned at runtime. Find its active camera after
+        // spawning, so approaching the counter also works without a keyboard.
+        if (openWhenNearby)
+        {
+            if (playerCamera == null || !playerCamera.isActiveAndEnabled)
+                playerCamera = Camera.main;
+
+            if (playerCamera == null)
+            {
+                if (shopOpen) CloseShop();
+                return;
+            }
+
+            var counter = shopMenu != null ? shopMenu.transform : transform;
+            var offset = playerCamera.transform.position - counter.position;
+            var heightDifference = Mathf.Abs(offset.y);
+            offset.y = 0f;
+            // A wider exit radius prevents the menu flickering at the boundary.
+            var radius = interactionDistance + (shopOpen ? 1f : 0f);
+            var nearby = heightDifference < 3f && offset.sqrMagnitude <= radius * radius;
+            if (nearby && !shopOpen) OpenShop();
+            else if (!nearby && shopOpen) CloseShop();
+            return;
+        }
+
         // Temporary keyboard testing.
         // This will eventually be replaced with XR interaction.
         if (Keyboard.current != null &&
