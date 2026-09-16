@@ -14,8 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DinoProfile
   behaviour: 1
   prefersPlayer: 0
-  sightRange: 100
+  sightRange: 50
   sightAngle: 60
+  nightSightMultiplier: 0.5
+  crouchSightMultiplier: 0.5
   hearingRadius: 18
   noiseMemory: 5
   giveUpTimer: 5
@@ -24,6 +26,18 @@ MonoBehaviour:
   attackCooldown: 1.5
   attackDamage: 25
   moveSpeed: 7
+  idleSound: {fileID: 0}
+  chaseSound: {fileID: 0}
+  attackSound: {fileID: 0}
+  hurtSound: {fileID: 0}
+  deathSound: {fileID: 0}
+  fleeSound: {fileID: 0}
+  packFormSound: {fileID: 0}
+  footstepSound: {fileID: 0}
+  idleSoundInterval: 8
+  footstepInterval: 2
+  corpseDespawnDelay: 2
+  corpseAnimFreezeDelay: 5
   health: 200
   xpReward: 10
   drops:

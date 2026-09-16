@@ -36,6 +36,11 @@ public class DinoAI : MonoBehaviour
     private State state = State.Wander;
     private State prevState = State.Wander;
 
+    // ---- Read by DinoAIManager for culling / despawn decisions ----
+    public bool InCombat => state == State.Chase || state == State.Attack;
+    public Animator AnimatorRef => animator;
+    public AudioSource AudioRef => audioSource;
+
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
@@ -49,6 +54,11 @@ public class DinoAI : MonoBehaviour
         attack = GetComponent<DinoAttack>();
         if (attack == null) attack = gameObject.AddComponent<DinoAttack>();
         attack.Init(this, profile, animator, audioSource);
+
+        // Footsteps: same deal — additive, silent if the profile has no clip.
+        DinoFootsteps steps = GetComponent<DinoFootsteps>();
+        if (steps == null) steps = gameObject.AddComponent<DinoFootsteps>();
+        steps.Init(profile, audioSource);
 
         if (player == null)
         {
@@ -75,12 +85,12 @@ public class DinoAI : MonoBehaviour
     {
         if (profile == null || agent == null) return;
 
-        // ---- (1) TARGET VALIDITY: runs EVERY frame, before anything else. ----
+        // ---- TARGET VALIDITY: runs EVERY frame, before anything else. ----
         // A Destroy()ed corpse reads as fake-null, so "null" and "dead" must be
         // handled by the same branch or the dino can be left frozen in Attack.
         ValidateTarget();
 
-        // ---- (3) Performance manager (optional — null manager = old behaviour) ----
+        // ---- Performance manager (optional — null manager = old behaviour) ----
         DinoAIManager mgr = DinoAIManager.Instance;
         if (mgr != null && !mgr.IsActive(this))
         {
@@ -96,15 +106,17 @@ public class DinoAI : MonoBehaviour
 
         if (agent.isOnNavMesh) Act();
 
-        // ---- (2) Sound: chase stinger on transition, idle calls while wandering ----
+        // ---- Sound: chase stinger on transition, idle calls while wandering ----
         if (state != prevState) OnStateChanged(prevState, state);
         prevState = state;
         TickIdleSound();
 
-        if (animator != null) animator.SetFloat("Speed", agent.velocity.magnitude);
+        // Skip animator writes while the Animator is culled off — they'd be discarded anyway.
+        if (animator != null && animator.enabled)
+            animator.SetFloat("Speed", agent.velocity.magnitude);
     }
 
-    // ==================== (1) DEAD / DESTROYED TARGET HANDLING ====================
+    // ==================== DEAD / DESTROYED TARGET HANDLING ====================
 
     // True when the target is gone for any reason: never assigned, Destroy()ed
     // (fake-null), or alive-but-dead. One predicate, used everywhere.
@@ -179,6 +191,30 @@ public class DinoAI : MonoBehaviour
         {
             case DinoBehaviour.PredatorHuntsPlayer:
             case DinoBehaviour.PredatorHuntsHerbivores:
+                // ---- PACK COMMITMENT: while my pack has a LIVE shared target,
+                // I stay fully committed — the personal give-up / lose-interest
+                // path below is bypassed entirely. Personal sensing does not
+                // matter (packmates block FOV all the time); only the target
+                // dying/clearing, or an extreme leash breach, releases me.
+                bool packEngaged = pack != null && !TargetGone(pack.SharedTarget);
+                if (packEngaged)
+                {
+                    // extreme-distance safety only: double the normal leash
+                    if (distFromSpawn > profile.leashRange * 2f)
+                    {
+                        lastSensedTime = -999f;
+                        if (state == State.Chase || state == State.Attack) ReturnToWander();
+                    }
+                    else
+                    {
+                        currentTarget = pack.SharedTarget;
+                        lastSensedTime = Time.time;   // commitment counts as sensing
+                        float packDist = Vector3.Distance(transform.position, currentTarget.position);
+                        state = ResolveCombatState(packDist, currentTarget);
+                    }
+                    break;
+                }
+
                 if (leashed)
                 {
                     lastSensedTime = -999f;
@@ -255,8 +291,10 @@ public class DinoAI : MonoBehaviour
         }
 
         // If I found prey and I'm in a pack, tell the pack so everyone converges.
+        // Pass `this` as the reporter so the pack can play its rally cry through
+        // the member that actually spotted the prey.
         if (chosen != null && pack != null)
-            pack.ReportTarget(chosen);
+            pack.ReportTarget(chosen, this);
 
         if (chosen != null) return chosen;
 
@@ -268,6 +306,9 @@ public class DinoAI : MonoBehaviour
     bool IsDead(Transform t)
     {
         if (t == null) return true;
+        // A corpse is dead by definition — no living dino may ever target one,
+        // even if some component state were inconsistent.
+        if (t.GetComponent<DinoCorpse>() != null) return true;
         PlayerHealth php = t.GetComponent<PlayerHealth>();
         if (php != null && php.IsDead) return true;
         DinoHealth dh = t.GetComponent<DinoHealth>();
@@ -327,7 +368,7 @@ public class DinoAI : MonoBehaviour
                 break;
 
             case State.Chase:
-                // (1) Guard: dead or destroyed target can never hold us in Chase.
+                // Guard: dead or destroyed target can never hold us in Chase.
                 if (TargetGone(currentTarget)) { currentTarget = null; ReturnToWander(); break; }
                 agent.isStopped = false;
                 agent.speed = profile.moveSpeed;
@@ -336,15 +377,14 @@ public class DinoAI : MonoBehaviour
                 break;
 
             case State.Attack:
-                // (1) Guard: dead or destroyed target can never hold us in Attack.
+                // Guard: dead or destroyed target can never hold us in Attack.
                 if (TargetGone(currentTarget)) { currentTarget = null; ReturnToWander(); break; }
                 agent.isStopped = false;
                 agent.stoppingDistance = CombatDistance(currentTarget);
                 agent.SetDestination(currentTarget.position);
                 FaceTarget(currentTarget);
 
-                // (4) Attack execution lives in DinoAttack now — same cooldown,
-                // same damage, same animator trigger.
+                // Attack execution lives in DinoAttack — same cooldown, damage, trigger.
                 if (attack != null) attack.TryAttack(currentTarget);
                 break;
 
@@ -363,6 +403,9 @@ public class DinoAI : MonoBehaviour
 
     public void OnAttacked(Transform attacker)
     {
+        // never acquire a dead/destroyed attacker as a target
+        if (TargetGone(attacker)) return;
+
         if (profile.behaviour == DinoBehaviour.PassiveRetaliator || profile.behaviour == DinoBehaviour.Flees)
         {
             currentTarget = attacker;
@@ -370,7 +413,7 @@ public class DinoAI : MonoBehaviour
         }
     }
 
-    // ==================== (2) SOUND ====================
+    // ==================== SOUND ====================
 
     // Plays a clip if we have both an AudioSource and a clip. Silent otherwise — never errors.
     public void PlayClip(AudioClip clip)
@@ -384,6 +427,11 @@ public class DinoAI : MonoBehaviour
         // chase stinger fires once, on the transition into Chase
         if (to == State.Chase && from != State.Chase)
             PlayClip(profile.chaseSound);
+
+        // flee stinger fires once, on the transition into Flee — skittish
+        // species like Parasaurolophus.
+        if (to == State.Flee && from != State.Flee)
+            PlayClip(profile.fleeSound);
     }
 
     void TickIdleSound()
@@ -401,7 +449,7 @@ public class DinoAI : MonoBehaviour
         nextIdleSoundTime = Time.time + baseInterval * Random.Range(0.6f, 1.4f);
     }
 
-    // ==================== (3) MANAGER SLEEP / WAKE ====================
+    // ==================== MANAGER SLEEP / WAKE ====================
 
     void GoDormant()
     {
@@ -416,7 +464,7 @@ public class DinoAI : MonoBehaviour
             agent.ResetPath();
             agent.isStopped = true;
         }
-        if (animator != null) animator.SetFloat("Speed", 0f);
+        if (animator != null && animator.enabled) animator.SetFloat("Speed", 0f);
     }
 
     void WakeUp()
@@ -481,13 +529,31 @@ public class DinoAI : MonoBehaviour
         if (dir != Vector3.zero) transform.rotation = Quaternion.LookRotation(dir);
     }
 
+    // ---- Sight range after night / crouch modifiers ----
+    // Both hooks live on DinoAIManager and default to false, so with no manager
+    // in the scene (or no flags set) the range is exactly profile.sightRange.
+    float EffectiveSightRange(Transform t)
+    {
+        float range = profile.sightRange;
+
+        if (DinoAIManager.IsNightNow && profile.nightSightMultiplier > 0f)
+            range *= profile.nightSightMultiplier;
+
+        // crouching only hides the PLAYER, not other dinos
+        if (t == player && DinoAIManager.IsPlayerCrouchingNow && profile.crouchSightMultiplier > 0f)
+            range *= profile.crouchSightMultiplier;
+
+        return range;
+    }
+
     bool CanSee(Transform t)
     {
         if (t == null) return false;
+        float range = EffectiveSightRange(t);
         Vector3 to = t.position - transform.position;
-        if (to.magnitude > profile.sightRange) return false;
+        if (to.magnitude > range) return false;
         if (Vector3.Angle(transform.forward, to) > profile.sightAngle) return false;
-        if (Physics.Raycast(transform.position, to.normalized, out RaycastHit hit, profile.sightRange))
+        if (Physics.Raycast(transform.position, to.normalized, out RaycastHit hit, range))
         {
             if (hit.transform != t && !hit.transform.IsChildOf(t) && !t.IsChildOf(hit.transform))
                 return false;

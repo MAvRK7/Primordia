@@ -16,6 +16,8 @@ MonoBehaviour:
   prefersPlayer: 1
   sightRange: 50
   sightAngle: 90
+  nightSightMultiplier: 0.5
+  crouchSightMultiplier: 0.5
   hearingRadius: 6
   noiseMemory: 3
   giveUpTimer: 5
@@ -24,6 +26,18 @@ MonoBehaviour:
   attackCooldown: 1.5
   attackDamage: 250
   moveSpeed: 4.5
+  idleSound: {fileID: 0}
+  chaseSound: {fileID: 0}
+  attackSound: {fileID: 0}
+  hurtSound: {fileID: 0}
+  deathSound: {fileID: 0}
+  fleeSound: {fileID: 0}
+  packFormSound: {fileID: 0}
+  footstepSound: {fileID: 0}
+  idleSoundInterval: 8
+  footstepInterval: 2
+  corpseDespawnDelay: 2
+  corpseAnimFreezeDelay: 5
   health: 7000
   xpReward: 10
   drops:
@@ -51,5 +65,5 @@ MonoBehaviour:
   alphaXpMult: 3
   alphaHealthMult: 2.5
   alphaDamageMult: 1.8
-  alphaScaleMult: 1.4
+  alphaScaleMult: 1.1
   alphaTint: {r: 0.6, g: 0.1, b: 0.1, a: 1}
