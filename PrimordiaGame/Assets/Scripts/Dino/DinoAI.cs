@@ -106,16 +106,30 @@ public class DinoAI : MonoBehaviour
 
     // ==================== (1) DEAD / DESTROYED TARGET HANDLING ====================
 
-    // True when the target is gone for any reason: never assigned, Destroy()ed
-    // (fake-null), or alive-but-dead. One predicate, used everywhere.
+    // Missing, dead, and sheltered targets cannot be retained or reacquired.
     bool TargetGone(Transform t)
     {
-        return t == null || IsDead(t);
+        return t == null || IsDead(t) || CampsiteSafeZone.Contains(t.position);
     }
 
     // Clears a gone target and guarantees we cannot sit frozen pointing at a corpse.
     void ValidateTarget()
     {
+        if (pack != null && pack.SharedTarget != null && TargetGone(pack.SharedTarget))
+            pack.ClearTarget();
+
+        // Shelter drops aggro immediately, including remembered noise and fleeing,
+        // even on frames where the performance manager skips sensing.
+        bool shelteredTarget = currentTarget != null && CampsiteSafeZone.Contains(currentTarget.position);
+        bool shelteredPlayer = player != null && CampsiteSafeZone.Contains(player.position);
+        if (shelteredTarget || (shelteredPlayer && (state == State.Investigate ||
+            (state == State.Flee && currentTarget == null))))
+        {
+            lastSensedTime = -999f;
+            hasHeardSomething = false;
+            ReturnToWander();
+        }
+
         if (!TargetGone(currentTarget))
         {
             hadLiveTarget = true;
@@ -140,7 +154,11 @@ public class DinoAI : MonoBehaviour
         if (agent != null)
         {
             agent.stoppingDistance = 0f;
-            if (agent.isOnNavMesh) agent.isStopped = false;
+            if (agent.isOnNavMesh)
+            {
+                agent.ResetPath();
+                agent.isStopped = false;
+            }
         }
         if (animator != null) animator.ResetTrigger("Attack");
     }
@@ -203,8 +221,8 @@ public class DinoAI : MonoBehaviour
 
             case DinoBehaviour.Flees:
                 // Flee from the player if sensed, OR from whatever attacked us (currentTarget).
-                bool threatened = (player != null && !IsDead(player) && (CanSee(player) || CanHearNoise()))
-                               || (currentTarget != null && !IsDead(currentTarget) && recentlySensed);
+                bool threatened = (!TargetGone(player) && (CanSee(player) || CanHearNoise()))
+                               || (!TargetGone(currentTarget) && recentlySensed);
                 if (threatened) state = State.Flee;
                 else if (state == State.Flee) { currentTarget = null; state = State.Wander; }
                 break;
@@ -277,7 +295,7 @@ public class DinoAI : MonoBehaviour
     // ---- Can this dino currently see OR hear OR feel (proximity) the target? ----
     bool CanSense(Transform t)
     {
-        if (t == null) return false;
+        if (TargetGone(t)) return false;
         if (Vector3.Distance(transform.position, t.position) < proximityAware) return true;
         if (CanSee(t)) return true;
         if (t == player && CanHearNoise()) return true;
@@ -362,6 +380,7 @@ public class DinoAI : MonoBehaviour
 
     public void OnAttacked(Transform attacker)
     {
+        if (TargetGone(attacker)) return;
         if (profile.behaviour == DinoBehaviour.PassiveRetaliator || profile.behaviour == DinoBehaviour.Flees)
         {
             currentTarget = attacker;
@@ -492,7 +511,7 @@ public class DinoAI : MonoBehaviour
 
     bool CanSee(Transform t)
     {
-        if (t == null) return false;
+        if (TargetGone(t)) return false;
         Vector3 to = t.position - transform.position;
         if (to.magnitude > profile.sightRange) return false;
         if (Vector3.Angle(transform.forward, to) > profile.sightAngle) return false;
@@ -508,6 +527,8 @@ public class DinoAI : MonoBehaviour
 
     bool CanHearNoise()
     {
+        if (player != null && CampsiteSafeZone.Contains(player.position)) return false;
+        if (CampsiteSafeZone.Contains(PlayerNoise.lastNoisePos)) return false;
         if (Time.time - PlayerNoise.lastNoiseTime > profile.noiseMemory) return false;
         float audibleRange = Mathf.Min(profile.hearingRadius, PlayerNoise.lastNoiseRange);
         return audibleRange > 0f &&
