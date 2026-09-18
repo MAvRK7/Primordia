@@ -1187,6 +1187,7 @@ GameObject:
   - component: {fileID: 2549439410371847147}
   - component: {fileID: 3046136602418080461}
   - component: {fileID: -911055697682004543}
+  - component: {fileID: 7759389601535341630}
   m_Layer: 0
   m_Name: Alpha Apatosaurus
   m_TagString: Untagged
@@ -1314,6 +1315,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DinoAlpha
   profile: {fileID: 11400000, guid: a8c36a4dc6a976348948de37957440ca, type: 2}
+--- !u!65 &7759389601535341630
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7416044391184233841}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 6.5376477, y: 20.18167, z: 41.77779}
+  m_Center: {x: -0.035437346, y: 8.146312, z: 2.4232311}
 --- !u!1 &7454114126182096510
 GameObject:
   m_ObjectHideFlags: 0

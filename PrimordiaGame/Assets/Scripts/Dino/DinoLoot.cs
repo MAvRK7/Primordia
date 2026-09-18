@@ -1,4 +1,6 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
 public class DinoLoot : MonoBehaviour
 {
@@ -7,7 +9,12 @@ public class DinoLoot : MonoBehaviour
 
     public void DropLoot()
     {
-        if (profile == null || profile.drops == null) return;
+        if (profile == null) return;
+
+        // Every hunt supplies both demo currencies; profile-specific parts remain bonus loot.
+        SpawnPlaceholder("Meat");
+        SpawnPlaceholder("Bone");
+        if (profile.drops == null) return;
 
         foreach (DinoProfile.DropEntry entry in profile.drops)
         {
@@ -24,6 +31,7 @@ public class DinoLoot : MonoBehaviour
     void SpawnPlaceholder(string partName)
     {
         GameObject drop = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        SceneManager.MoveGameObjectToScene(drop, gameObject.scene);
         drop.name = partName;
         drop.transform.localScale = Vector3.one * 0.4f;
 
@@ -36,6 +44,14 @@ public class DinoLoot : MonoBehaviour
 
         Rigidbody rb = drop.AddComponent<Rigidbody>();
         rb.AddForce(new Vector3(off.x, 3f, off.y), ForceMode.Impulse);
+        drop.AddComponent<XRGrabInteractable>();
+        var pickup = drop.AddComponent<DinoLootPickup>();
+        // Soft parts supply meat; hard/signature parts supply bones for demo recipes.
+        var softPart = partName.Contains("Meat", System.StringComparison.OrdinalIgnoreCase) ||
+            partName.Contains("Hide", System.StringComparison.OrdinalIgnoreCase) ||
+            partName.Contains("Pelt", System.StringComparison.OrdinalIgnoreCase);
+        pickup.meat = softPart ? 1 : 0;
+        pickup.bones = softPart ? 0 : 1;
     }
 
     Color ColorForPart(string partName)
@@ -43,6 +59,7 @@ public class DinoLoot : MonoBehaviour
         switch (partName)
         {
             // bulk parts
+            case "Meat":            return new Color(0.75f, 0.15f, 0.15f);
             case "Bone":            return new Color(0.93f, 0.90f, 0.78f);  // bone white
             case "Hide":            return new Color(0.55f, 0.35f, 0.20f);  // brown leather
             case "Giant Bone":      return new Color(0.80f, 0.76f, 0.62f);  // darker bone

@@ -1,23 +1,3 @@
-/*using UnityEngine;
-
-[System.Serializable]
-public class ShopItem
-{
-    [Header("Weapon")]
-    public string itemName;
-
-    [Header("Required Dinosaur Parts")]
-    public int requiredMeat;
-    public int requiredBones;
-
-    public bool CanBePurchased(int availableMeat, int availableBones)
-    {
-        return availableMeat >= requiredMeat &&
-               availableBones >= requiredBones;
-    }
-}
-*/
-
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -30,6 +10,8 @@ public class ShopItem
 
     [TextArea]
     public string description;
+
+    public GameObject weaponPrefab;
 
     [Header("Required Dinosaur Parts")]
     [FormerlySerializedAs("requiredMeat")]

@@ -111,6 +111,7 @@ GameObject:
   - component: {fileID: 8901409327834852619}
   - component: {fileID: -3713514299518448175}
   - component: {fileID: -8763544976208382007}
+  - component: {fileID: 2832244052748658225}
   m_Layer: 0
   m_Name: Velociraptor
   m_TagString: Untagged
@@ -238,6 +239,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DinoAlpha
   profile: {fileID: 0}
+--- !u!65 &2832244052748658225
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 898345484586276646}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 3.0613108, y: 5.5162773, z: 13.563303}
+  m_Center: {x: -0.12546492, y: 2.5212505, z: -1.2647886}
 --- !u!1 &958423062424353059
 GameObject:
   m_ObjectHideFlags: 0

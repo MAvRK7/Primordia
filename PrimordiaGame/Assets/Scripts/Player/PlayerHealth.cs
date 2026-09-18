@@ -13,7 +13,13 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
     void Start()
     {
+        RestoreHealth();
+    }
+
+    public void RestoreHealth()
+    {
         currentHealth = maxHealth;
+        IsDead = false;
     }
 
     public void TakeDamage(float amount)

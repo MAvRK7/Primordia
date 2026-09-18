@@ -1068,6 +1068,7 @@ GameObject:
   - component: {fileID: 3475418731564064402}
   - component: {fileID: -7024268520362023173}
   - component: {fileID: 6916762551172724611}
+  - component: {fileID: 1059217527333993518}
   m_Layer: 0
   m_Name: Trex
   m_TagString: Untagged
@@ -1195,6 +1196,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DinoAlpha
   profile: {fileID: 0}
+--- !u!65 &1059217527333993518
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6907583188507441872}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 9.564484, y: 16.753094, z: 30.880962}
+  m_Center: {x: -0.46432495, y: 7.797427, z: -0.6142616}
 --- !u!1 &6922851808222281402
 GameObject:
   m_ObjectHideFlags: 0

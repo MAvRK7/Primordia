@@ -32,16 +32,23 @@ Use the SDK, NDK, and JDK installed by Unity Hub. The toolchain bundled with the
 
 4. If Unity reports XR configuration warnings, open **Edit > Project Settings > XR Plug-in Management > Project Validation** and review them before applying a fix. The repository already includes Android OpenXR and Meta Quest settings.
 
-5. Open `Assets/Scenes/SampleScene.unity`. Play Mode can be used for editor-level checks when a compatible OpenXR runtime or simulator is available; use an on-device build for accurate Quest input, performance, and rendering tests.
+5. Open `Assets/Scenes/assembly_scene.unity`. Play Mode can be used for editor-level checks when a compatible OpenXR runtime or simulator is available; use an on-device build for accurate Quest input, performance, and rendering tests.
 
-`SampleScene.unity` is currently the only enabled scene in **File > Build Profiles > Scene List**. `MainMenu.unity` and `BasicScene.unity` exist in the project but are not currently included in player builds.
+`assembly_scene.unity` is currently the only enabled scene in **File > Build Profiles > Scene List**. `MainMenu.unity` and `BasicScene.unity` exist in the project but are not currently included in player builds.
 
 ## Build and install an APK
+
+Demo controls: close an empty hand with grip + trigger and swing to punch (8 damage).
+Press left **Y** (or **Home** in the editor) to return to camp with full health.
+Grab dinosaur loot to deposit it into the shop sack: meat/hide/pelt adds one meat;
+bone/claw/horn and other hard parts add one bone. Every dinosaur drops at least one
+meat and one bone. Buy from the shop's 17-weapon menu, then pick up the weapon from
+the counter before buying another. Recipes cost one or two of each resource.
 
 1. Connect the Quest by USB, put on the headset, and accept the USB debugging prompt.
 2. In Unity, open **File > Build Profiles**.
 3. Select **Android** and choose **Switch Platform** if Android is not already active.
-4. Confirm that `Assets/Scenes/SampleScene.unity` is enabled in the Scene List.
+4. Confirm that `Assets/Scenes/assembly_scene.unity` is enabled in the Scene List.
 5. Choose **Build and Run** to install directly to the connected headset, or choose **Build** and save the output as:
 
    ```text

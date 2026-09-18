@@ -15480,6 +15480,7 @@ GameObject:
   - component: {fileID: 4197801518588754884}
   - component: {fileID: 7679994537346038413}
   - component: {fileID: 6176115831351993353}
+  - component: {fileID: 3062867510846393532}
   m_Layer: 0
   m_Name: Left Controller
   m_TagString: Untagged
@@ -15651,6 +15652,24 @@ MonoBehaviour:
     m_Interactions: 
     m_SingletonActionBindings: []
     m_Flags: 0
+--- !u!114 &3062867510846393532
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5392129821663725647}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d9e52230f263491c9fb538db6971ba9, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerPunch
+  grip: {fileID: 6558622148059887818, guid: c348712bda248c246b8c49b3db54643f, type: 3}
+  trigger: {fileID: -4289430672226363583, guid: c348712bda248c246b8c49b3db54643f, type: 3}
+  isTracked: {fileID: 840156964685210860, guid: c348712bda248c246b8c49b3db54643f, type: 3}
+  damage: 8
+  radius: 0.12
+  minimumSpeed: 1.2
 --- !u!1 &5404664768386838202
 GameObject:
   m_ObjectHideFlags: 0
@@ -20682,6 +20701,7 @@ GameObject:
   - component: {fileID: 97962806065518042}
   - component: {fileID: 1488686265225241203}
   - component: {fileID: 3835027822770405508}
+  - component: {fileID: 3426381545869460752}
   m_Layer: 0
   m_Name: Right Controller
   m_TagString: Untagged
@@ -20853,6 +20873,24 @@ MonoBehaviour:
     m_Interactions: 
     m_SingletonActionBindings: []
     m_Flags: 0
+--- !u!114 &3426381545869460752
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6482395204800633471}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d9e52230f263491c9fb538db6971ba9, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerPunch
+  grip: {fileID: -1758520528963094988, guid: c348712bda248c246b8c49b3db54643f, type: 3}
+  trigger: {fileID: 7904272356298805229, guid: c348712bda248c246b8c49b3db54643f, type: 3}
+  isTracked: {fileID: -7044516463258014562, guid: c348712bda248c246b8c49b3db54643f, type: 3}
+  damage: 8
+  radius: 0.12
+  minimumSpeed: 1.2
 --- !u!1 &6573711939719187945
 GameObject:
   m_ObjectHideFlags: 0
