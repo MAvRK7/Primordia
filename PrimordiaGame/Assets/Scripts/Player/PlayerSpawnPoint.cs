@@ -2,7 +2,9 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>Creates the configured player rig at this scene's starting position.</summary>
+// Spawn before dinosaur Start callbacks resolve the Player tag.
 [DisallowMultipleComponent]
+[DefaultExecutionOrder(-100)]
 public sealed class PlayerSpawnPoint : MonoBehaviour
 {
     [SerializeField] GameObject m_PlayerPrefab;

@@ -12,6 +12,8 @@ using UnityEngine;
 //
 // Additive by design: if no DinoAIManager exists in the scene, every DinoAI
 // behaves exactly as before. Nothing on the dino side is required.
+// Establish Instance before scene dinosaurs register in OnEnable.
+[DefaultExecutionOrder(-50)]
 public class DinoAIManager : MonoBehaviour
 {
     public static DinoAIManager Instance { get; private set; }
