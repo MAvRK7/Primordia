@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: abb9fa5d0b4c9904c82fdff2e90ef34f, type: 3}
+  m_Name: Stegosaurus
+  m_EditorClassIdentifier: Assembly-CSharp::DinoProfile
+  behaviour: 2
+  prefersPlayer: 1
+  sightRange: 10
+  sightAngle: 45
+  hearingRadius: 8
+  noiseMemory: 3
+  giveUpTimer: 5
+  leashRange: 35
+  attackRange: 2
+  attackCooldown: 1.5
+  attackDamage: 80
+  moveSpeed: 3
+  health: 1500
+  xpReward: 10
+  drops:
+  - partName: Back-Plate
+    minAmount: 1
+    maxAmount: 1
+    chance: 1
+    isRare: 0
+  - partName: Bone
+    minAmount: 2
+    maxAmount: 4
+    chance: 1
+    isRare: 0
+  - partName: Hide
+    minAmount: 2
+    maxAmount: 4
+    chance: 1
+    isRare: 0
+  - partName: Twin Tail-Spike
+    minAmount: 1
+    maxAmount: 1
+    chance: 0.1
+    isRare: 1
+  isAlpha: 0
+  alphaXpMult: 3
+  alphaHealthMult: 2.5
+  alphaDamageMult: 1.8
+  alphaScaleMult: 1.4
+  alphaTint: {r: 0.6, g: 0.1, b: 0.1, a: 1}

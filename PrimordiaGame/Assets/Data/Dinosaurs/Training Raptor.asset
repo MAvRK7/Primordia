@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: abb9fa5d0b4c9904c82fdff2e90ef34f, type: 3}
+  m_Name: Training Raptor
+  m_EditorClassIdentifier: Assembly-CSharp::DinoProfile
+  behaviour: 0
+  primaryTarget: 1
+  secondaryTarget: 0
+  sightRange: 18
+  sightAngle: 80
+  hearingRadius: 30
+  noiseMemory: 5
+  giveUpTimer: 7
+  leashRange: 14
+  attackRange: 1.8
+  attackCooldown: 1.8
+  attackDamage: 10
+  moveSpeed: 3.25
+  health: 100
+  xpReward: 0

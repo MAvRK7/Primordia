@@ -55,6 +55,8 @@ crashlytics-build.properties
 /[Aa]ssets/AddressableAssetsData/*/*.bin*
 /[Aa]ssets/AddressableAssetsData/*/*.json
 
-.mcp.json 
+.mcp.json
 Assets/Plugins/NuGet/McpPlugin*
 
+# Local Claude-generated configuration and skills
+/.claude/

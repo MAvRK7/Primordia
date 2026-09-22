@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7127c996dd8ae5c4db853ac960221281, type: 3}
+  m_Name: Apex Rifle
+  m_EditorClassIdentifier: Assembly-CSharp::WeaponDefinition
+  m_WeaponId: apex_rifle
+  m_DisplayName: Apex Rifle
+  m_WeaponType: 1
+  m_Tier: 8
+  m_Damage: 98
+  m_Range: 90
+  m_AttacksPerSecond: 2.2
+  m_NoiseRange: 40
+  m_AmmoType: 2
+  m_MagazineCapacity: 12
+  m_Automatic: 0

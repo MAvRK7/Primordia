@@ -1,5 +1,6 @@
 using UnityEngine;
 using Unity.XR.CoreUtils;
+using UnityEngine.InputSystem;
 using UnityEngine.XR.Interaction.Toolkit.Locomotion.Comfort;
 using UnityEngine.XR.Interaction.Toolkit.Locomotion.Gravity;
 using UnityEngine.XR.Interaction.Toolkit.Locomotion.Movement;
@@ -38,6 +39,22 @@ public sealed class PlayerRigController : MonoBehaviour
     TunnelingVignetteController m_TunnelingVignetteController;
     Vector3 m_SpawnPosition;
     Quaternion m_SpawnRotation;
+    InputAction m_RespawnAction;
+
+    void OnEnable()
+    {
+        // Y is unused by locomotion and weapons (right B reloads, right A jumps).
+        m_RespawnAction = new InputAction("Return to camp", InputActionType.Button,
+            "<XRController>{LeftHand}/{SecondaryButton}");
+        m_RespawnAction.AddBinding("<Keyboard>/home");
+        m_RespawnAction.Enable();
+    }
+
+    void OnDisable()
+    {
+        m_RespawnAction?.Dispose();
+        m_RespawnAction = null;
+    }
 
     public bool tunnelingVignetteEnabled { get; private set; }
 
@@ -69,7 +86,8 @@ public sealed class PlayerRigController : MonoBehaviour
 
     void Update()
     {
-        if (m_ResetAfterFalling && m_OriginTransform.position.y < m_FallResetHeight)
+        if (m_RespawnAction.WasPressedThisFrame() ||
+            (m_ResetAfterFalling && m_OriginTransform.position.y < m_FallResetHeight))
             ResetToSpawn();
     }
 
@@ -171,6 +189,14 @@ public sealed class PlayerRigController : MonoBehaviour
             m_CharacterController.enabled = false;
 
         m_OriginTransform.SetPositionAndRotation(m_SpawnPosition, m_SpawnRotation);
+        // Recenter horizontal room-scale movement on the campsite spawn as well.
+        if (m_XROrigin.Camera != null)
+        {
+            var offset = m_SpawnPosition - m_XROrigin.Camera.transform.position;
+            offset.y = 0f;
+            m_OriginTransform.position += offset;
+        }
+        m_XROrigin.GetComponentInChildren<PlayerHealth>()?.RestoreHealth();
         Physics.SyncTransforms();
 
         if (controllerWasEnabled)
