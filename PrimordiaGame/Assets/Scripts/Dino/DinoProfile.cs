@@ -65,15 +65,7 @@ public class DinoProfile : ScriptableObject
     public float footstepInterval = 2f;    // metres travelled per footstep sound
 
     [Header("Corpse")]
-    public float corpseDespawnDelay = 2f;      // seconds after Butcher() before the corpse is removed
     public float corpseAnimFreezeDelay = 5f;   // disable the Animator this long after death (0 = never)
-    [Range(0f, 1f)]
-    [Tooltip("Chance a dino-on-dino (or unknown) kill leaves a butcherable corpse. " +
-             "Player kills ALWAYS leave one. Keeps the world from filling with carcasses.")]
-    public float dinoKillCorpseChance = 0.2f;
-    [Tooltip("Seconds after death before a NON-corpse body is removed — long enough " +
-             "for the death animation to read, then it despawns with no loot.")]
-    public float noCorpseDespawnDelay = 2.5f;
 
     [Header("Stats")]
     public float health = 45f;

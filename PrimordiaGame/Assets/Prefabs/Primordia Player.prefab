@@ -15670,6 +15670,7 @@ MonoBehaviour:
   damage: 8
   radius: 0.12
   minimumSpeed: 1.2
+  butcherKnifeModel: {fileID: 3663866449651220694, guid: ca09eb4f683ad400f8baef8456708236, type: 3}
 --- !u!1 &5404664768386838202
 GameObject:
   m_ObjectHideFlags: 0
@@ -20891,6 +20892,7 @@ MonoBehaviour:
   damage: 8
   radius: 0.12
   minimumSpeed: 1.2
+  butcherKnifeModel: {fileID: 3663866449651220694, guid: ca09eb4f683ad400f8baef8456708236, type: 3}
 --- !u!1 &6573711939719187945
 GameObject:
   m_ObjectHideFlags: 0

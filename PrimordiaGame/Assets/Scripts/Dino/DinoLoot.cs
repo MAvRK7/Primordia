@@ -6,10 +6,14 @@ public class DinoLoot : MonoBehaviour
 {
     public DinoProfile profile;
     public float scatterRadius = 1.5f;
+    private bool hasDroppedLoot;
 
     public void DropLoot()
     {
-        if (profile == null) return;
+        if (profile == null || hasDroppedLoot) return;
+        var corpse = GetComponent<DinoCorpse>();
+        if (corpse == null || !corpse.IsButchered) return;
+        hasDroppedLoot = true;
 
         // Every hunt supplies both demo currencies; profile-specific parts remain bonus loot.
         SpawnPlaceholder("Meat");
