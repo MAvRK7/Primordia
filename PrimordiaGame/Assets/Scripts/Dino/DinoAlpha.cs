@@ -8,12 +8,12 @@ public class DinoAlpha : MonoBehaviour
     {
         if (profile == null || !profile.isAlpha) return;
 
-        // bigger body
+        // bigger body — the only thing this script still does at runtime
         transform.localScale *= profile.alphaScaleMult;
 
-        // tint all the dino's materials so it reads as an alpha
-        foreach (Renderer r in GetComponentsInChildren<Renderer>())
-            foreach (Material m in r.materials)
-                m.color = profile.alphaTint;
+        // NOTE: alpha colouring is authored in the editor now (alpha prefabs use
+        // their own materials), so the old runtime tint loop was removed — it
+        // overwrote those materials and also leaked a material instance per
+        // renderer. profile.alphaTint is left in place but is no longer read.
     }
 }

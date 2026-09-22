@@ -31,6 +31,10 @@ public class DinoProfile : ScriptableObject
     [Header("Sight")]
     public float sightRange = 18f;
     public float sightAngle = 70f;      // half-angle each side of facing
+    [Tooltip("Sight range is multiplied by this at night (DinoAIManager.isNight).")]
+    public float nightSightMultiplier = 0.5f;
+    [Tooltip("Sight range vs the PLAYER is multiplied by this while they crouch (DinoAIManager.playerIsCrouching).")]
+    public float crouchSightMultiplier = 0.5f;
 
     [Header("Hearing")]
     public float hearingRadius = 18f;
@@ -54,7 +58,22 @@ public class DinoProfile : ScriptableObject
     public AudioClip attackSound;       // on each actual attack
     public AudioClip hurtSound;         // on taking non-lethal damage
     public AudioClip deathSound;        // on death
+    public AudioClip fleeSound;         // once, on entering Flee (skittish species)
+    public AudioClip packFormSound;     // once, when a pack rallies onto a fresh target (raptor)
+    public AudioClip footstepSound;     // one step; retriggered by distance travelled
     public float idleSoundInterval = 8f;   // rough seconds between idle calls (randomized)
+    public float footstepInterval = 2f;    // metres travelled per footstep sound
+
+    [Header("Corpse")]
+    public float corpseDespawnDelay = 2f;      // seconds after Butcher() before the corpse is removed
+    public float corpseAnimFreezeDelay = 5f;   // disable the Animator this long after death (0 = never)
+    [Range(0f, 1f)]
+    [Tooltip("Chance a dino-on-dino (or unknown) kill leaves a butcherable corpse. " +
+             "Player kills ALWAYS leave one. Keeps the world from filling with carcasses.")]
+    public float dinoKillCorpseChance = 0.2f;
+    [Tooltip("Seconds after death before a NON-corpse body is removed — long enough " +
+             "for the death animation to read, then it despawns with no loot.")]
+    public float noCorpseDespawnDelay = 2.5f;
 
     [Header("Stats")]
     public float health = 45f;

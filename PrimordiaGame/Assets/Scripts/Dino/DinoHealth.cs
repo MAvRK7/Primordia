@@ -60,12 +60,13 @@ public class DinoHealth : MonoBehaviour, IDamageable
 
         PlayClip(profile.deathSound);
 
-        // spawn loot drops
-        DinoLoot loot = GetComponent<DinoLoot>();
-        if (loot != null) loot.DropLoot();
+        // Who killed us? A destroyed attacker reads as null, so this also covers
+        // the debug K-kill with no player in the scene: not a player kill.
+        bool playerKill = lastAttacker != null && lastAttacker.CompareTag("Player");
 
-        // grant XP ONLY if the player landed the killing blow
-        if (lastAttacker != null && lastAttacker.CompareTag("Player"))
+        // grant XP ONLY if the player landed the killing blow — this happens on
+        // DEATH, not on butcher. Butchering is just a loot-release action.
+        if (playerKill)
         {
             PlayerProgression prog = lastAttacker.GetComponent<PlayerProgression>();
             if (prog != null)
@@ -75,6 +76,9 @@ public class DinoHealth : MonoBehaviour, IDamageable
                 prog.AddXP(xp);
             }
         }
+
+        // Stop the AI and freeze the agent in place — the corpse persists in the
+        // world until Butcher() is called (VR interactor will call it later).
         DinoAI ai = GetComponent<DinoAI>();
         if (ai != null) ai.enabled = false;
         DinoMover mover = GetComponent<DinoMover>();
@@ -84,9 +88,33 @@ public class DinoHealth : MonoBehaviour, IDamageable
         if (animator != null) animator.SetTrigger("Die");
         foreach (var hitCollider in GetComponentsInChildren<Collider>())
             hitCollider.enabled = false;
-        EnableCorpseTrigger();
+
+        // ---- Does this body stick around as a butcherable corpse? ----
+        // Player kill  -> always (that's the player's kill, they earned the loot).
+        // Dino kill / unknown killer -> only profile.dinoKillCorpseChance of the
+        // time, so predator-vs-herbivore fights don't litter the map with
+        // lootable carcasses the player never earned.
+        bool spawnCorpse = playerKill || Random.value < profile.dinoKillCorpseChance;
+
+        if (spawnCorpse)
+        {
+            EnableCorpseTrigger();
+            // Attach the corpse component in place of the old auto-Destroy(). It
+            // holds the profile + the DinoLoot ref so Butcher() can release loot.
+            // No Destroy() here — the corpse stays until butchered; DinoCorpse
+            // handles the final removal (after Butcher() + a short delay).
+            DinoCorpse corpse = GetComponent<DinoCorpse>();
+            if (corpse == null) corpse = gameObject.AddComponent<DinoCorpse>();
+            corpse.Init(profile, GetComponent<DinoLoot>(), animator);
+        }
+        else
+        {
+            // No corpse, no loot: let the death animation read, then remove the
+            // body. No DinoCorpse is added, so nothing can ever butcher it.
+            float delay = Mathf.Max(0f, profile.noCorpseDespawnDelay);
+            Destroy(gameObject, delay);
+        }
         died?.Invoke();
-        Destroy(gameObject, 5f);
     }
 
     void EnableCorpseTrigger()
