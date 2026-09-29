@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 935365a92abca433abfb162b92d2fc14, type: 3}
+  m_Name: GrasslandSpawnTable
+  m_EditorClassIdentifier: Assembly-CSharp::SpawnTable
+  entries:
+  - prefab: {fileID: 6715131202910428208, guid: c0cbfcc78dd434c5684d4b4ae58a24b4, type: 3}
+    weight: 1
+  - prefab: {fileID: 7584100965744132486, guid: 7493c1ecd1c404de99f73106b42e493e, type: 3}
+    weight: 1
+  - prefab: {fileID: 8427973270875964228, guid: cca05c8cb1ec243579fb8ac31ab6afdc, type: 3}
+    weight: 1
+  - prefab: {fileID: 5610999520502378176, guid: b36a817e55bef4296be16f30baba38ec, type: 3}
+    weight: 1
+  - prefab: {fileID: 8060381813511860813, guid: 590019bbe4681487d99765b477b65348, type: 3}
+    weight: 1
+  - prefab: {fileID: 2802628694012845220, guid: fa633128b3c4a4d308fdbfd7474a8c2e, type: 3}
+    weight: 1
