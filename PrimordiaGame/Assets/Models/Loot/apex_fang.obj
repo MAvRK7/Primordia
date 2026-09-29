@@ -1,6 +1,6 @@
 # Blender 5.2.2 LTS
 # www.blender.org
-mtllib Untitled.mtl
+mtllib apex_fang.mtl
 o Cone
 v -0.301974 -1.286703 -0.328586
 v 0.038504 -1.286703 -0.197982

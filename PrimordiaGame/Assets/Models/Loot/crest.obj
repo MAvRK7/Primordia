@@ -1,6 +1,6 @@
 # Blender 5.2.2 LTS
 # www.blender.org
-mtllib Untitled.mtl
+mtllib crest.mtl
 o Parasaurolophus_Crest
 v -1.200000 0.550000 -0.450000
 v -1.200000 0.550000 0.450000

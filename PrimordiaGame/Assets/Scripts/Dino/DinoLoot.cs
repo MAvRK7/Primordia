@@ -5,6 +5,8 @@ using UnityEngine.XR.Interaction.Toolkit.Interactables;
 public class DinoLoot : MonoBehaviour
 {
     public DinoProfile profile;
+    [Tooltip("Model prefabs for each drop name. Parts without an entry drop as coloured cubes.")]
+    public LootCatalog catalog;
     public float scatterRadius = 1.5f;
     private bool hasDroppedLoot;
 
@@ -16,8 +18,8 @@ public class DinoLoot : MonoBehaviour
         hasDroppedLoot = true;
 
         // Every hunt supplies both demo currencies; profile-specific parts remain bonus loot.
-        SpawnPlaceholder("Meat");
-        SpawnPlaceholder("Bone");
+        SpawnDrop("Meat");
+        SpawnDrop("Bone");
         if (profile.drops == null) return;
 
         foreach (DinoProfile.DropEntry entry in profile.drops)
@@ -28,20 +30,16 @@ public class DinoLoot : MonoBehaviour
 
             int amount = Random.Range(entry.minAmount, entry.maxAmount + 1);
             for (int i = 0; i < amount; i++)
-                SpawnPlaceholder(entry.partName);
+                SpawnDrop(entry.partName);
         }
     }
 
-    void SpawnPlaceholder(string partName)
+    void SpawnDrop(string partName)
     {
-        GameObject drop = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        GameObject prefab = catalog != null ? catalog.PrefabFor(partName) : null;
+        GameObject drop = prefab != null ? Instantiate(prefab) : CreatePlaceholder(partName);
         SceneManager.MoveGameObjectToScene(drop, gameObject.scene);
         drop.name = partName;
-        drop.transform.localScale = Vector3.one * 0.4f;
-
-        // colour the cube by part type so drops are readable at a glance
-        Renderer rend = drop.GetComponent<Renderer>();
-        rend.material.color = ColorForPart(partName);
 
         Vector2 off = Random.insideUnitCircle * scatterRadius;
         drop.transform.position = transform.position + new Vector3(off.x, 0.3f, off.y);
@@ -56,6 +54,17 @@ public class DinoLoot : MonoBehaviour
             partName.Contains("Pelt", System.StringComparison.OrdinalIgnoreCase);
         pickup.meat = softPart ? 1 : 0;
         pickup.bones = softPart ? 0 : 1;
+    }
+
+    GameObject CreatePlaceholder(string partName)
+    {
+        GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        cube.transform.localScale = Vector3.one * 0.4f;
+
+        // colour the cube by part type so drops are readable at a glance
+        Renderer rend = cube.GetComponent<Renderer>();
+        rend.material.color = ColorForPart(partName);
+        return cube;
     }
 
     Color ColorForPart(string partName)

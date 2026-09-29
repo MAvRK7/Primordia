@@ -1,6 +1,6 @@
 # Blender 5.2.2 LTS
 # www.blender.org
-mtllib Untitled.mtl
+mtllib twin_spike.mtl
 o Stegosaurus_Twin_Tail_Spike
 v 0.234992 -0.041911 0.080101
 v 0.159422 -0.008499 0.051100

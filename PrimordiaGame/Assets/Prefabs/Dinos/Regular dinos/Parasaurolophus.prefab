@@ -912,6 +912,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DinoLoot
   profile: {fileID: 11400000, guid: 3bf0e63ee431e884ea5018ef448dd988, type: 2}
+  catalog: {fileID: 11400000, guid: cded09b6cfa5749909ffff928824eb04, type: 2}
   scatterRadius: 1.5
 --- !u!114 &161387366259770826
 MonoBehaviour:
