@@ -3,7 +3,27 @@ guid: 2527230a601c74d69ae844d1e61b612e
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Blade
+    second: {fileID: 2100000, guid: 200a12d71ce3e491a8270a010b8a8621, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Buttons
+    second: {fileID: 2100000, guid: 200a12d71ce3e491a8270a010b8a8621, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Ornaments
+    second: {fileID: 2100000, guid: 200a12d71ce3e491a8270a010b8a8621, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Rope
+    second: {fileID: 2100000, guid: 200a12d71ce3e491a8270a010b8a8621, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

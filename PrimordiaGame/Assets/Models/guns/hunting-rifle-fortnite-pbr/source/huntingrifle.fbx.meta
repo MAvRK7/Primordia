@@ -3,7 +3,12 @@ guid: 4081cceb62bd347f19cbae6333e919df
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MI_Old_Hunting_Rifle
+    second: {fileID: 2100000, guid: 1beba809052b446b7952ff10350b27eb, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

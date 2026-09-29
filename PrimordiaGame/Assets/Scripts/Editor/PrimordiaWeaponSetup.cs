@@ -452,6 +452,7 @@ public static class PrimordiaWeaponSetup
         EnsureFolder(k_WeaponPrefabFolder);
 
         AssetDatabase.ImportAsset(k_InputActionsPath, ImportAssetOptions.ForceSynchronousImport);
+        PrimordiaWeaponMaterials.EnsureModelMaterials();
 
         foreach (var spec in k_WeaponSpecs)
         {
@@ -783,6 +784,7 @@ public static class PrimordiaWeaponSetup
             light.enabled = false;
 
         EnsureNonNullModelMaterials(renderers);
+        PrimordiaWeaponMaterials.ApplyToVisual(spec.ModelPath, visual);
         return visual;
     }
 

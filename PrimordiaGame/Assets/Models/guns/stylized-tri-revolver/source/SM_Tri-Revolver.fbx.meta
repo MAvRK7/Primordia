@@ -3,7 +3,12 @@ guid: 6fddb5ed185564bcaadf5ff9d1a81822
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Tri-Revolver
+    second: {fileID: 2100000, guid: 40174963abfa948748bd3c521b1f4b33, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

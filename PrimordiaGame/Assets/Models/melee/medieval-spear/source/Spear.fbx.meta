@@ -3,7 +3,12 @@ guid: fa77236dfdd59419799863bcc046c918
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Spear
+    second: {fileID: 2100000, guid: 2086f333c66ec4fa8812c5f6db59ba73, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
