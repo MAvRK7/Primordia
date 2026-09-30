@@ -60,3 +60,9 @@ crashlytics-build.properties
 
 .mcp.json
 Assets/Plugins/NuGet/McpPlugin*
+
+Assets/Plugins/NuGet/
+Assets/Plugins/NuGet.meta
+.mcp.json
+.claude/
+AI-Game-Dev-Installer.unitypackage
