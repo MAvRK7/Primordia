@@ -16,6 +16,8 @@ MonoBehaviour:
   prefersPlayer: 1
   sightRange: 12
   sightAngle: 50
+  nightSightMultiplier: 0.5
+  crouchSightMultiplier: 0.5
   hearingRadius: 8
   noiseMemory: 3
   giveUpTimer: 5
@@ -24,6 +26,17 @@ MonoBehaviour:
   attackCooldown: 1.5
   attackDamage: 60
   moveSpeed: 3.5
+  idleSound: {fileID: 8300000, guid: 60020f4697d66794f9555039feb5362e, type: 3}
+  chaseSound: {fileID: 8300000, guid: 634c08bcd84ba93468220901520c0a66, type: 3}
+  attackSound: {fileID: 8300000, guid: 57d81f57bdd3ada419c493709894a916, type: 3}
+  hurtSound: {fileID: 8300000, guid: a6008f3988fc15f4cabcd76f2045e8b9, type: 3}
+  deathSound: {fileID: 8300000, guid: d9f39d312ef96a4428c6858835ec5a5e, type: 3}
+  fleeSound: {fileID: 0}
+  packFormSound: {fileID: 0}
+  footstepSound: {fileID: 0}
+  idleSoundInterval: 8
+  footstepInterval: 2
+  corpseAnimFreezeDelay: 5
   health: 2000
   xpReward: 10
   drops:
@@ -32,9 +45,9 @@ MonoBehaviour:
     maxAmount: 2
     chance: 1
     isRare: 0
-  - partName: bone
-    minAmount: 1
-    maxAmount: 1
+  - partName: Bone
+    minAmount: 2
+    maxAmount: 3
     chance: 1
     isRare: 0
   - partName: Flawless Horn
@@ -43,6 +56,7 @@ MonoBehaviour:
     chance: 0.06
     isRare: 1
   isAlpha: 1
+  alphaXpMult: 3
   alphaHealthMult: 2.5
   alphaDamageMult: 1.8
   alphaScaleMult: 1.4

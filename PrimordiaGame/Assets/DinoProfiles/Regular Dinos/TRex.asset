@@ -26,17 +26,16 @@ MonoBehaviour:
   attackCooldown: 1.5
   attackDamage: 250
   moveSpeed: 4.5
-  idleSound: {fileID: 0}
-  chaseSound: {fileID: 0}
-  attackSound: {fileID: 0}
-  hurtSound: {fileID: 0}
-  deathSound: {fileID: 0}
+  idleSound: {fileID: 8300000, guid: 7bc19106799a61240bb4fae2dde2d698, type: 3}
+  chaseSound: {fileID: 8300000, guid: 24ca6c3509d27f64c8d986c967ead7bb, type: 3}
+  attackSound: {fileID: 8300000, guid: 05182bef09d45a54a99b8d22b22f770b, type: 3}
+  hurtSound: {fileID: 8300000, guid: ea815199da9216e4d8e840a4adaa1f01, type: 3}
+  deathSound: {fileID: 8300000, guid: 39b5c3ff104eb41449f660278b8f6a22, type: 3}
   fleeSound: {fileID: 0}
   packFormSound: {fileID: 0}
   footstepSound: {fileID: 0}
   idleSoundInterval: 8
   footstepInterval: 2
-  corpseDespawnDelay: 2
   corpseAnimFreezeDelay: 5
   health: 7000
   xpReward: 10

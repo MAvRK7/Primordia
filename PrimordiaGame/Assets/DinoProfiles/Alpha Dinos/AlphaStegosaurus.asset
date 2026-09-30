@@ -16,6 +16,8 @@ MonoBehaviour:
   prefersPlayer: 1
   sightRange: 10
   sightAngle: 45
+  nightSightMultiplier: 0.5
+  crouchSightMultiplier: 0.5
   hearingRadius: 8
   noiseMemory: 3
   giveUpTimer: 5
@@ -24,6 +26,17 @@ MonoBehaviour:
   attackCooldown: 1.5
   attackDamage: 80
   moveSpeed: 3
+  idleSound: {fileID: 8300000, guid: 66182b71846f0a9428f3f395d896f6aa, type: 3}
+  chaseSound: {fileID: 8300000, guid: 1305c66a1c7bd374986e7f13403c74f6, type: 3}
+  attackSound: {fileID: 8300000, guid: 63d53002135a42d4680b02c2aee5b9ae, type: 3}
+  hurtSound: {fileID: 8300000, guid: 2c025a88076502343b7774f9b8d0121d, type: 3}
+  deathSound: {fileID: 8300000, guid: f6e20c5057cd03146a99b76e370e628a, type: 3}
+  fleeSound: {fileID: 0}
+  packFormSound: {fileID: 0}
+  footstepSound: {fileID: 0}
+  idleSoundInterval: 8
+  footstepInterval: 2
+  corpseAnimFreezeDelay: 5
   health: 1500
   xpReward: 10
   drops:
@@ -38,8 +51,8 @@ MonoBehaviour:
     chance: 1
     isRare: 0
   - partName: Hide
-    minAmount: 2
-    maxAmount: 4
+    minAmount: 1
+    maxAmount: 1
     chance: 1
     isRare: 0
   - partName: Twin Tail-Spike

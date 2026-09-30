@@ -21,11 +21,11 @@ public static class PrimordiaLootSetup
     // Drop name as written in the DinoProfiles, source model, and longest side in metres.
     static readonly (string PartName, string Model, float Size)[] k_Loot =
     {
-        ("Bone", "Big_bone", 0.4f),
+        ("Bone", "bone", 0.4f),
         ("Giant Bone", "Big_bone", 0.9f),
         ("Ancient Bone", "rare_bone", 0.6f),
         ("Hide", "Hide_animal", 0.5f),
-        ("Alpha Pelt", "Hide_animal", 0.6f),
+        ("Alpha Pelt", "Hide_animal 1", 0.6f),
         ("Sickle Claw", "claw", 0.3f),
         ("Horn", "Normal_horn", 0.45f),
         ("Flawless Horn", "Flawless_horn", 0.5f),

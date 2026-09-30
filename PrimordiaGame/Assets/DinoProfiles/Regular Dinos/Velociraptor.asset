@@ -26,17 +26,16 @@ MonoBehaviour:
   attackCooldown: 1.5
   attackDamage: 25
   moveSpeed: 7
-  idleSound: {fileID: 0}
-  chaseSound: {fileID: 0}
-  attackSound: {fileID: 0}
-  hurtSound: {fileID: 0}
-  deathSound: {fileID: 0}
+  idleSound: {fileID: 8300000, guid: 3a8de3165ce75004aaf5a4751384c061, type: 3}
+  chaseSound: {fileID: 8300000, guid: 31a3289f0c3858d419f9cf729cb449eb, type: 3}
+  attackSound: {fileID: 8300000, guid: 4868de42a5e03464cbdcf2b2f36fed09, type: 3}
+  hurtSound: {fileID: 8300000, guid: 2014039d8b779e14097e20c6479f0c70, type: 3}
+  deathSound: {fileID: 8300000, guid: a3d67e13fcd43c145ac8daf15d974432, type: 3}
   fleeSound: {fileID: 0}
-  packFormSound: {fileID: 0}
+  packFormSound: {fileID: 8300000, guid: e01baee40e9f86548a9dedf351f256bd, type: 3}
   footstepSound: {fileID: 0}
   idleSoundInterval: 8
   footstepInterval: 2
-  corpseDespawnDelay: 2
   corpseAnimFreezeDelay: 5
   health: 200
   xpReward: 10
@@ -51,7 +50,7 @@ MonoBehaviour:
     maxAmount: 1
     chance: 1
     isRare: 0
-  - partName: Alpha pelt
+  - partName: Alpha Pelt
     minAmount: 1
     maxAmount: 1
     chance: 0.08
