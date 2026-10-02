@@ -28,7 +28,15 @@ public class DinoAttack : MonoBehaviour
     // Returns true if an attack actually fired this call.
     public bool TryAttack(Transform target)
     {
-        if (target == null || profile == null) return false;
+        if (target == null || profile == null || ai == null) return false;
+        var offset = target.position - transform.position;
+        offset.y = 0f;
+        if (offset.magnitude > ai.CombatDistance(target) * 1.25f) return false;
+        if (CampsiteSafeZone.Contains(target.position)) return false;
+        var targetHealth = target.GetComponentInParent<PlayerHealth>();
+        var targetDino = target.GetComponentInParent<DinoHealth>();
+        if ((targetHealth == null && targetDino == null) ||
+            (targetHealth != null && targetHealth.IsDead) || (targetDino != null && targetDino.IsDead)) return false;
         if (Time.time - lastAttackTime < profile.attackCooldown) return false;
 
         lastAttackTime = Time.time;

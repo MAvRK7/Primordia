@@ -45,6 +45,8 @@ public class DinoSpawnGroup : MonoBehaviour
 
         foreach (SpawnSlot slot in slots)
         {
+            if (slot.instance != null && slot.instance.TryGetComponent<DinoHealth>(out var health) && health.IsDead)
+                slot.instance = null;
             if (slot.instance != null)
                 continue;
 
@@ -98,11 +100,14 @@ public class DinoSpawnGroup : MonoBehaviour
     private bool TryGetSpawnPosition(out Vector3 position)
     {
         int attempts = Mathf.Max(1, navMeshSampleAttempts);
+        var agent = dinoPrefab.GetComponent<NavMeshAgent>();
+        var filter = new NavMeshQueryFilter { agentTypeID = agent != null ? agent.agentTypeID : 0,
+            areaMask = agent != null ? agent.areaMask : NavMesh.AllAreas };
         for (int i = 0; i < attempts; i++)
         {
             Vector2 offset = Random.insideUnitCircle * scatterRadius;
             Vector3 candidate = transform.position + new Vector3(offset.x, 0f, offset.y);
-            if (NavMesh.SamplePosition(candidate, out NavMeshHit hit, navMeshSampleDistance, NavMesh.AllAreas))
+            if (NavMesh.SamplePosition(candidate, out NavMeshHit hit, navMeshSampleDistance, filter))
             {
                 position = hit.position;
                 return true;

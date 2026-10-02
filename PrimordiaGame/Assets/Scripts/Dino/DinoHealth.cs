@@ -62,13 +62,14 @@ public class DinoHealth : MonoBehaviour, IDamageable
 
         // Who killed us? A destroyed attacker reads as null, so this also covers
         // the debug K-kill with no player in the scene: not a player kill.
-        bool playerKill = lastAttacker != null && lastAttacker.CompareTag("Player");
+        var killer = lastAttacker != null ? lastAttacker.GetComponentInParent<PlayerHealth>() : null;
+        bool playerKill = killer != null;
 
         // grant XP ONLY if the player landed the killing blow — this happens on
         // DEATH, not on butcher. Butchering is just a loot-release action.
         if (playerKill)
         {
-            PlayerProgression prog = lastAttacker.GetComponent<PlayerProgression>();
+            PlayerProgression prog = killer.GetComponent<PlayerProgression>();
             if (prog != null)
             {
                 int xp = profile.xpReward;

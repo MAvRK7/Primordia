@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.SceneManagement;
 
 public class SpawnDirector : MonoBehaviour
 {
@@ -26,6 +27,10 @@ public class SpawnDirector : MonoBehaviour
     [Tooltip("No day/night system exists yet - toggle manually for testing until one is wired in.")]
     public bool isNight = false;
 
+    [Header("Initial Population")]
+    [Min(0f)] public float initialSpawnDelay = 2f;
+    [Min(1)] public int maxSpawnsPerFrame = 1;
+
     [Header("Spawn Placement (annulus around player)")]
     public float spawnRadiusMin = 35f;
     public float spawnRadiusMax = 80f;
@@ -36,7 +41,7 @@ public class SpawnDirector : MonoBehaviour
     public int frustumAvoidAttempts = 5;
 
     [Header("Campfire Safety")]
-    [Tooltip("Spawns are rejected within this distance of campfireSite. T-Rex is exempt from this check.")]
+    [Tooltip("Spawns are rejected within this distance of campfireSite for all species.")]
     public float campfireSafeRadius = 15f;
 
     [Header("Despawn")]
@@ -57,6 +62,11 @@ public class SpawnDirector : MonoBehaviour
     // moment it becomes empty (startup, or a despawn freeing a slot) and fires independently
     // of every other slot - multiple slots can spawn in the same frame.
     private readonly List<float> emptySlotTimers = new List<float>();
+    bool initialPopulation = true;
+    int nearbyAuthoredDinos;
+    float nextPopulationCheck;
+
+    public int ActiveCount => activeInstances.Count;
 
     void Update()
     {
@@ -68,7 +78,20 @@ public class SpawnDirector : MonoBehaviour
         int effectiveCap = ComputeEffectiveCap();
 
         UpdateDespawns(playerT);
+        if (Time.time >= nextPopulationCheck)
+        {
+            nearbyAuthoredDinos = 0;
+            var manager = DinoAIManager.Instance;
+            if (manager != null)
+                foreach (var dino in manager.RegisteredDinos)
+                    if (dino != null && !activeInstances.Contains(dino.gameObject) &&
+                        Vector3.Distance(dino.transform.position, playerT.position) <= spawnRadiusMax)
+                        nearbyAuthoredDinos++;
+            nextPopulationCheck = Time.time + 0.5f;
+        }
+        effectiveCap = Mathf.Max(0, effectiveCap - nearbyAuthoredDinos);
         ReconcileSlotTimers(effectiveCap);
+        initialPopulation = false;
         UpdateSpawns(playerT, effectiveCap);
     }
 
@@ -90,6 +113,13 @@ public class SpawnDirector : MonoBehaviour
                 activeInstances.RemoveAt(i);
                 continue;
             }
+            // Corpses stay available for harvesting without occupying a live slot.
+            if (inst.GetComponent<DinoCorpse>() != null)
+            {
+                activeInstances.RemoveAt(i);
+                outOfRangeSince.Remove(inst);
+                continue;
+            }
 
             float dist = Vector3.Distance(inst.transform.position, playerT.position);
 
@@ -105,12 +135,8 @@ public class SpawnDirector : MonoBehaviour
             if (Time.time - outOfRangeSince[inst] < despawnLingerSeconds)
                 continue;
 
-            // TODO(DinoBrain FSM): once San's AI FSM exists, also skip despawn while this
-            // instance is in a Chase or Attack state (an actively-engaged dino shouldn't
-            // vanish out from under the player mid-encounter). There is no such state to
-            // query yet, so this always evaluates false and never blocks despawn.
-            bool isInChaseOrAttackState = false;
-            if (isInChaseOrAttackState) continue;
+            var ai = inst.GetComponent<DinoAI>();
+            if ((ai != null && ai.InCombat) || inst.GetComponent<DinoCorpse>() != null) continue;
 
             if (IsInCameraView(inst.transform.position)) continue; // never despawn while visible
 
@@ -138,6 +164,7 @@ public class SpawnDirector : MonoBehaviour
 
     void UpdateSpawns(Transform playerT, int effectiveCap)
     {
+        int spawnedThisFrame = 0;
         // Every empty slot's timer is independent - check all of them each tick so multiple
         // slots can spawn in the same frame if their timers happen to elapse together.
         for (int i = emptySlotTimers.Count - 1; i >= 0; i--)
@@ -150,18 +177,21 @@ public class SpawnDirector : MonoBehaviour
             {
                 // Slot is filled now - it's no longer an empty slot with a pending timer.
                 emptySlotTimers.RemoveAt(i);
+                if (++spawnedThisFrame >= Mathf.Max(1, maxSpawnsPerFrame)) break;
             }
             else
             {
                 // No valid spawn point this attempt - slot stays empty, reroll its timer.
-                emptySlotTimers[i] = RollSlotSpawnTime();
+                // Failed placement should retry soon, not wait another full respawn.
+                emptySlotTimers[i] = Time.time + 2f;
             }
         }
     }
 
     float RollSlotSpawnTime()
     {
-        return Time.time + UnityEngine.Random.Range(respawnDelayMin, respawnDelayMax);
+        return Time.time + (initialPopulation ? initialSpawnDelay :
+            UnityEngine.Random.Range(respawnDelayMin, respawnDelayMax));
     }
 
     bool SpawnOne(Transform playerT)
@@ -171,27 +201,28 @@ public class SpawnDirector : MonoBehaviour
         GameObject prefab = biomeDef.spawnTable.GetWeightedRandomPrefab();
         if (prefab == null) return false;
 
-        bool isTRex = prefab.name.IndexOf("TRex", StringComparison.OrdinalIgnoreCase) >= 0;
-
-        Vector3? point = TryFindSpawnPoint(playerT.position, isTRex);
+        var prefabAgent = prefab.GetComponent<NavMeshAgent>();
+        if (prefabAgent == null || prefab.GetComponent<DinoAI>() == null) return false;
+        Vector3? point = TryFindSpawnPoint(playerT.position, prefabAgent);
         if (point == null) return false; // no valid point this attempt; this slot's timer gets rerolled
 
         GameObject instance = Instantiate(prefab, point.Value, Quaternion.identity);
+        SceneManager.MoveGameObjectToScene(instance, gameObject.scene);
         activeInstances.Add(instance);
         return true;
     }
 
-    Vector3? TryFindSpawnPoint(Vector3 origin, bool exemptFromCampfireSafeRadius)
+    Vector3? TryFindSpawnPoint(Vector3 origin, NavMeshAgent prefabAgent)
     {
         Vector3? lastValidButVisible = null;
 
         for (int attempt = 0; attempt < Mathf.Max(1, frustumAvoidAttempts); attempt++)
         {
-            Vector3? candidate = SampleAnnulusOnNavMesh(origin);
+            Vector3? candidate = SampleAnnulusOnNavMesh(origin, prefabAgent);
             if (candidate == null) continue;
 
-            if (!exemptFromCampfireSafeRadius && campfireSite != null &&
-                Vector3.Distance(candidate.Value, campfireSite.position) < campfireSafeRadius)
+            if (CampsiteSafeZone.Contains(candidate.Value) || (campfireSite != null &&
+                Vector3.Distance(candidate.Value, campfireSite.position) < campfireSafeRadius))
             {
                 continue; // inside the campfire safe zone; resample
             }
@@ -207,7 +238,7 @@ public class SpawnDirector : MonoBehaviour
         return lastValidButVisible;
     }
 
-    Vector3? SampleAnnulusOnNavMesh(Vector3 origin)
+    Vector3? SampleAnnulusOnNavMesh(Vector3 origin, NavMeshAgent prefabAgent)
     {
         for (int i = 0; i < Mathf.Max(1, navMeshSampleAttempts); i++)
         {
@@ -215,8 +246,28 @@ public class SpawnDirector : MonoBehaviour
             float radius = UnityEngine.Random.Range(spawnRadiusMin, spawnRadiusMax);
             Vector3 candidate = origin + new Vector3(Mathf.Cos(angle) * radius, 0f, Mathf.Sin(angle) * radius);
 
-            if (NavMesh.SamplePosition(candidate, out NavMeshHit hit, navMeshSampleMaxDistance, NavMesh.AllAreas))
-                return hit.position;
+            // Sample from the ground, not the player's elevation on another hill.
+            foreach (var terrain in Terrain.activeTerrains)
+            {
+                var local = candidate - terrain.transform.position;
+                var size = terrain.terrainData.size;
+                if (local.x < 0f || local.z < 0f || local.x > size.x || local.z > size.z) continue;
+                candidate.y = terrain.SampleHeight(candidate) + terrain.transform.position.y;
+                break;
+            }
+
+            var filter = new NavMeshQueryFilter { agentTypeID = prefabAgent.agentTypeID, areaMask = prefabAgent.areaMask };
+            if (!NavMesh.SamplePosition(candidate, out NavMeshHit hit, navMeshSampleMaxDistance, filter)) continue;
+            float distance = Vector3.Distance(hit.position, origin);
+            if (distance < spawnRadiusMin || distance > spawnRadiusMax) continue;
+            float clearance = prefabAgent.radius * Mathf.Max(Mathf.Abs(prefabAgent.transform.lossyScale.x),
+                Mathf.Abs(prefabAgent.transform.lossyScale.z));
+            if (!NavMesh.FindClosestEdge(hit.position, out var edge, filter) || edge.distance < clearance) continue;
+            bool blocked = false;
+            foreach (var collider in Physics.OverlapSphere(hit.position + Vector3.up * clearance,
+                Mathf.Max(0.5f, clearance), ~0, QueryTriggerInteraction.Ignore))
+                if (collider is not TerrainCollider) { blocked = true; break; }
+            if (!blocked) return hit.position;
         }
         return null;
     }
@@ -225,6 +276,7 @@ public class SpawnDirector : MonoBehaviour
 
     Transform ResolvePlayer()
     {
+        player = PlayerHealth.ResolveTarget(player);
         if (player != null) return player;
         Camera cam = ResolveCamera();
         return cam != null ? cam.transform : null;

@@ -29,6 +29,8 @@ public sealed class MeleeHitbox : MonoBehaviour
         m_Owner?.RegisterHit(other, m_HitCollider);
     }
 
+    void OnTriggerStay(Collider other) => m_Owner?.RegisterHit(other, m_HitCollider);
+
     public void SetActive(bool active)
     {
         if (m_HitCollider == null)

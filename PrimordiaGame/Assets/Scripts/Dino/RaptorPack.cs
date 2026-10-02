@@ -53,10 +53,11 @@ public class RaptorPack : MonoBehaviour
     bool IsDead(Transform t)
     {
         if (t == null) return true;
-        if (t.GetComponent<DinoCorpse>() != null) return true;
-        PlayerHealth php = t.GetComponent<PlayerHealth>();
+        if (CampsiteSafeZone.Contains(t.position)) return true;
+        if (t.GetComponentInParent<DinoCorpse>() != null) return true;
+        PlayerHealth php = t.GetComponentInParent<PlayerHealth>();
         if (php != null && php.IsDead) return true;
-        DinoHealth dh = t.GetComponent<DinoHealth>();
+        DinoHealth dh = t.GetComponentInParent<DinoHealth>();
         if (dh != null && dh.IsDead) return true;
         return false;
     }

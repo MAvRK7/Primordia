@@ -143,6 +143,11 @@ public sealed class Ranged : Item
 
     void Update()
     {
+        if (m_GrabInteractable == null || !m_GrabInteractable.isSelected)
+        {
+            m_TriggerHeld = false;
+            m_ActiveInteractor = null;
+        }
         if (m_TriggerHeld && m_Definition != null && m_Definition.Automatic)
             TryFire(m_ActiveInteractor != null ? m_ActiveInteractor.transform : transform);
     }

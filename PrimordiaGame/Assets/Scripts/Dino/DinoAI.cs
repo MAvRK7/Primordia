@@ -31,6 +31,10 @@ public class DinoAI : MonoBehaviour
     private bool hadLiveTarget;             // did we hold a valid target last check?
     private float nextIdleSoundTime;
     private bool dormant;                   // put to sleep by DinoAIManager (far from player)
+    private Transform retaliationTarget;
+    private float retaliationUntil;
+    private Renderer bodyRenderer;
+    private readonly RaycastHit[] sightHits = new RaycastHit[32];
 
     private enum State { Wander, Investigate, Chase, Attack, Flee }
     private State state = State.Wander;
@@ -44,6 +48,13 @@ public class DinoAI : MonoBehaviour
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
+        if (agent == null || profile == null)
+        {
+            Debug.LogError($"{name} needs a NavMeshAgent and DinoProfile.", this);
+            enabled = false;
+            return;
+        }
+        bodyRenderer = GetComponentInChildren<Renderer>();
         animator = GetComponentInChildren<Animator>();
         audioSource = GetComponent<AudioSource>();          // optional
         agent.avoidancePriority = Random.Range(1, 99);
@@ -60,11 +71,7 @@ public class DinoAI : MonoBehaviour
         if (steps == null) steps = gameObject.AddComponent<DinoFootsteps>();
         steps.Init(profile, audioSource);
 
-        if (player == null)
-        {
-            GameObject pgo = GameObject.FindWithTag("Player");
-            if (pgo != null) player = pgo.transform;
-        }
+        player = PlayerHealth.ResolveTarget(player);
 
         if (pack != null) pack.Register(this);
 
@@ -179,6 +186,7 @@ public class DinoAI : MonoBehaviour
 
     void Think()
     {
+        player = PlayerHealth.ResolveTarget(player);
         // ---- Target selection ----
         bool isPredator = profile.behaviour == DinoBehaviour.PredatorHuntsPlayer
                        || profile.behaviour == DinoBehaviour.PredatorHuntsHerbivores;
@@ -227,7 +235,7 @@ public class DinoAI : MonoBehaviour
                     {
                         currentTarget = pack.SharedTarget;
                         lastSensedTime = Time.time;   // commitment counts as sensing
-                        float packDist = Vector3.Distance(transform.position, currentTarget.position);
+                        float packDist = PlanarDistance(transform.position, currentTarget.position);
                         state = ResolveCombatState(packDist, currentTarget);
                     }
                     break;
@@ -287,13 +295,23 @@ public class DinoAI : MonoBehaviour
     // ---- Auto-target: pack-shared if in a pack, else prefer player/herbivore per profile ----
     Transform ChoosePredatorTarget()
     {
+        // Getting shot or punched takes priority over a herbivore hunt.
+        if (!TargetGone(retaliationTarget) && Time.time < retaliationUntil)
+            return retaliationTarget;
+
+        bool playerOk = !TargetGone(player) && CanSense(player);
+        if (playerOk && (profile.prefersPlayer ||
+            PlanarDistance(transform.position, player.position) <= proximityAware))
+        {
+            if (pack != null) pack.ReportTarget(player, this);
+            return player;
+        }
         // If in a pack and the pack already has a live target, hunt that (shared targeting).
         if (pack != null && !TargetGone(pack.SharedTarget))
             return pack.SharedTarget;
 
         Transform herb = FindNearestHerbivore();
         bool herbOk   = !TargetGone(herb) && CanSense(herb);
-        bool playerOk = !TargetGone(player) && CanSense(player);
 
         Transform chosen = null;
         if (profile.prefersPlayer)
@@ -421,14 +439,17 @@ public class DinoAI : MonoBehaviour
 
     public void OnAttacked(Transform attacker)
     {
+        if (profile == null || attacker == null) return;
+        attacker = PlayerHealth.ResolveTarget(attacker);
         // never acquire a dead/destroyed attacker as a target
         if (TargetGone(attacker)) return;
 
-        if (profile.behaviour == DinoBehaviour.PassiveRetaliator || profile.behaviour == DinoBehaviour.Flees)
-        {
-            currentTarget = attacker;
-            lastSensedTime = Time.time;   // being hit counts as sensing
-        }
+        currentTarget = attacker;
+        retaliationTarget = attacker;
+        retaliationUntil = Time.time + Mathf.Max(profile.giveUpTimer, 1f);
+        lastSensedTime = Time.time;
+        if (pack != null && profile.behaviour != DinoBehaviour.Flees)
+            pack.ReportTarget(attacker, this);
     }
 
     // ==================== SOUND ====================
@@ -498,12 +519,15 @@ public class DinoAI : MonoBehaviour
 
     Transform FindNearestHerbivore()
     {
-        DinoAI[] all = FindObjectsByType<DinoAI>(FindObjectsSortMode.None);
+        // Use the manager's registry instead of scanning the whole scene per predator.
+        System.Collections.Generic.IReadOnlyList<DinoAI> all = DinoAIManager.Instance != null
+            ? DinoAIManager.Instance.RegisteredDinos
+            : FindObjectsByType<DinoAI>(FindObjectsSortMode.None);
         Transform nearest = null;
         float best = Mathf.Infinity;
         foreach (DinoAI d in all)
         {
-            if (d == this) continue;
+            if (d == null || d == this || !d.isActiveAndEnabled) continue;
 
             // guard against a missing profile (could be null after a merge/reimport)
             if (d.profile == null)
@@ -528,11 +552,13 @@ public class DinoAI : MonoBehaviour
         if (target == null) return profile.attackRange;
         NavMeshAgent ta = target.GetComponentInParent<NavMeshAgent>();
         CharacterController targetController = target.GetComponentInParent<CharacterController>();
-        float myR = agent != null ? agent.radius : 0f;
+        float myScale = Mathf.Max(Mathf.Abs(transform.lossyScale.x), Mathf.Abs(transform.lossyScale.z));
+        float myR = agent != null ? agent.radius * myScale : 0f;
         float targetR = ta != null
-            ? ta.radius
-            : targetController != null ? targetController.radius : 0f;
-        return profile.attackRange + myR + targetR;
+            ? ta.radius * Mathf.Max(Mathf.Abs(ta.transform.lossyScale.x), Mathf.Abs(ta.transform.lossyScale.z))
+            : targetController != null ? targetController.radius *
+                Mathf.Max(Mathf.Abs(targetController.transform.lossyScale.x), Mathf.Abs(targetController.transform.lossyScale.z)) : 0f;
+        return profile.attackRange * myScale + myR + targetR;
     }
 
     static float PlanarDistance(Vector3 a, Vector3 b)
@@ -544,8 +570,10 @@ public class DinoAI : MonoBehaviour
 
     Vector3 RandomWanderPoint()
     {
-        Vector3 random = Random.insideUnitSphere * wanderRadius + transform.position;
-        if (NavMesh.SamplePosition(random, out NavMeshHit hit, wanderRadius, NavMesh.AllAreas))
+        Vector2 offset = Random.insideUnitCircle * Mathf.Min(wanderRadius, profile.leashRange);
+        Vector3 random = spawnPos + new Vector3(offset.x, 0f, offset.y);
+        var filter = new NavMeshQueryFilter { agentTypeID = agent.agentTypeID, areaMask = agent.areaMask };
+        if (NavMesh.SamplePosition(random, out NavMeshHit hit, wanderRadius, filter))
             return hit.position;
         return transform.position;
     }
@@ -578,14 +606,26 @@ public class DinoAI : MonoBehaviour
     {
         if (TargetGone(t)) return false;
         float range = EffectiveSightRange(t);
-        Vector3 to = t.position - transform.position;
+        // A ray from the feet to another object's pivot often hits the terrain.
+        var eye = bodyRenderer != null ? bodyRenderer.bounds.center
+            : transform.position + Vector3.up * Mathf.Max(0.5f, agent != null ? agent.height * 0.75f : 1f);
+        var targetRenderer = t.GetComponentInChildren<Renderer>();
+        var targetPoint = t.GetComponentInParent<PlayerHealth>() != null || targetRenderer == null
+            ? t.position : targetRenderer.bounds.center;
+        Vector3 to = targetPoint - eye;
         if (to.magnitude > range) return false;
-        if (Vector3.Angle(transform.forward, to) > profile.sightAngle) return false;
-        if (Physics.Raycast(transform.position, to.normalized, out RaycastHit hit, range))
+        if (Vector3.Angle(transform.forward, Vector3.ProjectOnPlane(to, Vector3.up)) > profile.sightAngle) return false;
+        int count = Physics.RaycastNonAlloc(eye, to.normalized, sightHits, to.magnitude,
+            Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
+        for (int i = 0; i < count; i++)
         {
+            var hit = sightHits[i];
+            if (hit.transform.IsChildOf(transform)) continue;
             bool hitTargetHierarchy = hit.transform == t ||
                 hit.transform.IsChildOf(t) ||
-                t.IsChildOf(hit.transform);
+                t.IsChildOf(hit.transform) ||
+                (t.GetComponentInParent<PlayerHealth>() != null &&
+                 hit.transform.GetComponentInParent<PlayerHealth>() == t.GetComponentInParent<PlayerHealth>());
             if (!hitTargetHierarchy) return false;
         }
         return true;

@@ -30,6 +30,7 @@ public sealed class Melee : Item
 
     XRBaseInputInteractor m_ActiveInteractor;
     Transform m_HolderRoot;
+    Transform m_MotionFrame;
     Vector3 m_PreviousBladePosition;
     Vector3 m_BladeVelocity;
     bool m_HasBladeSample;
@@ -78,11 +79,13 @@ public sealed class Melee : Item
 
         var bladePosition = GetBladeSamplePosition();
         if (m_HasBladeSample && Time.fixedDeltaTime > Mathf.Epsilon)
-            m_BladeVelocity = (bladePosition - m_PreviousBladePosition) / Time.fixedDeltaTime;
+            m_BladeVelocity = m_MotionFrame != null
+                ? m_MotionFrame.TransformVector(m_MotionFrame.InverseTransformPoint(bladePosition) - m_PreviousBladePosition) / Time.fixedDeltaTime
+                : (bladePosition - m_PreviousBladePosition) / Time.fixedDeltaTime;
         else
             m_BladeVelocity = Vector3.zero;
 
-        m_PreviousBladePosition = bladePosition;
+        m_PreviousBladePosition = m_MotionFrame != null ? m_MotionFrame.InverseTransformPoint(bladePosition) : bladePosition;
         m_HasBladeSample = true;
     }
 
@@ -96,6 +99,8 @@ public sealed class Melee : Item
 
         m_ActiveInteractor = inputInteractor;
         m_HolderRoot = inputInteractor.transform.root;
+        var holder = inputInteractor.GetComponentInParent<PlayerHealth>();
+        m_MotionFrame = holder != null ? holder.transform : m_HolderRoot;
         m_NextHitTimes.Clear();
         SetHitboxActive(true);
         ResetBladeSample();
@@ -169,7 +174,8 @@ public sealed class Melee : Item
 
     void ResetBladeSample()
     {
-        m_PreviousBladePosition = GetBladeSamplePosition();
+        var position = GetBladeSamplePosition();
+        m_PreviousBladePosition = m_MotionFrame != null ? m_MotionFrame.InverseTransformPoint(position) : position;
         m_BladeVelocity = Vector3.zero;
         m_HasBladeSample = true;
     }
@@ -178,6 +184,7 @@ public sealed class Melee : Item
     {
         m_ActiveInteractor = null;
         m_HolderRoot = null;
+        m_MotionFrame = null;
         m_BladeVelocity = Vector3.zero;
         m_HasBladeSample = false;
         m_NextHitTimes.Clear();

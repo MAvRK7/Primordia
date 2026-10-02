@@ -36,7 +36,7 @@ public class DinoAIManager : MonoBehaviour
 
     [Header("Animator culling")]
     [Tooltip("Enable off-screen / far Animator disabling.")]
-    public bool enableAnimatorCulling = true;
+    public bool enableAnimatorCulling = false;
     [Tooltip("Beyond this distance from the player the Animator is disabled regardless of visibility.")]
     public float cullDistance = 45f;
 
@@ -68,6 +68,8 @@ public class DinoAIManager : MonoBehaviour
     private readonly List<DinoAI> dinos = new List<DinoAI>();
     private readonly HashSet<DinoAI> activeSet = new HashSet<DinoAI>();
     private readonly Plane[] frustum = new Plane[6];
+    private readonly List<DinoAI> candidates = new List<DinoAI>();
+    public IReadOnlyList<DinoAI> RegisteredDinos => dinos;
     private float nextReevaluateTime;
 
     void Awake()
@@ -93,9 +95,7 @@ public class DinoAIManager : MonoBehaviour
 
     void ResolvePlayer()
     {
-        if (player != null) return;
-        GameObject pgo = GameObject.FindWithTag("Player");
-        if (pgo != null) player = pgo.transform;
+        player = PlayerHealth.ResolveTarget(player);
     }
 
     public void Register(DinoAI dino)
@@ -141,16 +141,19 @@ public class DinoAIManager : MonoBehaviour
         Vector3 pp = player.position;
         float cap = activeDistance * activeDistance;
 
-        List<DinoAI> candidates = new List<DinoAI>(dinos.Count);
+        candidates.Clear();
         for (int i = 0; i < dinos.Count; i++)
         {
             DinoAI d = dinos[i];
             if (d == null) continue;
             float sq = (d.transform.position - pp).sqrMagnitude;
-            if (sq <= cap) candidates.Add(d);
+            // An engaged animal must not fall asleep halfway through a chase.
+            if (d.InCombat) activeSet.Add(d);
+            else if (sq <= cap) candidates.Add(d);
         }
 
-        if (maxActive > 0 && candidates.Count > maxActive)
+        int available = maxActive > 0 ? Mathf.Max(0, maxActive - activeSet.Count) : candidates.Count;
+        if (candidates.Count > available)
         {
             candidates.Sort((a, b) =>
             {
@@ -158,7 +161,7 @@ public class DinoAIManager : MonoBehaviour
                 float db = (b.transform.position - pp).sqrMagnitude;
                 return da.CompareTo(db);
             });
-            candidates.RemoveRange(maxActive, candidates.Count - maxActive);
+            candidates.RemoveRange(available, candidates.Count - available);
         }
 
         for (int i = 0; i < candidates.Count; i++) activeSet.Add(candidates[i]);
@@ -206,7 +209,7 @@ public class DinoAIManager : MonoBehaviour
                 if (anim != null)
                 {
                     bool far = havePlayer && distSq > cullSq;
-                    bool shouldAnimate = visible && !far;
+                    bool shouldAnimate = visible || d.InCombat || !far;
                     if (anim.enabled != shouldAnimate) anim.enabled = shouldAnimate;
                 }
             }

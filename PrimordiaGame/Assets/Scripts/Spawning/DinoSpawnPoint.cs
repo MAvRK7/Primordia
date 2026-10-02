@@ -42,6 +42,8 @@ public class DinoSpawnPoint : MonoBehaviour
 
     void Update()
     {
+        if (spawnedInstance != null && spawnedInstance.TryGetComponent<DinoHealth>(out var health) && health.IsDead)
+            spawnedInstance = null; // Leave the body for harvesting; start the respawn timer now.
         if (spawnedInstance != null || !enableRespawn)
             return;
 
@@ -109,7 +111,10 @@ public class DinoSpawnPoint : MonoBehaviour
 
     private bool TryGetSpawnPosition(Vector3 requestedPosition, out Vector3 position)
     {
-        if (NavMesh.SamplePosition(requestedPosition, out NavMeshHit hit, navMeshSampleDistance, NavMesh.AllAreas))
+        var agent = dinoPrefab != null ? dinoPrefab.GetComponent<NavMeshAgent>() : null;
+        var filter = new NavMeshQueryFilter { agentTypeID = agent != null ? agent.agentTypeID : 0,
+            areaMask = agent != null ? agent.areaMask : NavMesh.AllAreas };
+        if (NavMesh.SamplePosition(requestedPosition, out NavMeshHit hit, navMeshSampleDistance, filter))
         {
             position = hit.position;
             return true;

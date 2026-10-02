@@ -114,16 +114,19 @@ namespace Primordia.Editor
                 rig.name = "Rig";
                 rig.transform.SetParent(root.transform, false);
                 rig.transform.SetLocalPositionAndRotation(
-                    new Vector3(0f, 0f, -0.05f),
-                    Quaternion.Euler(0f, 180f, 0f));
-                rig.transform.localScale = isLeft
-                    ? Vector3.one
-                    : new Vector3(-1f, 1f, 1f);
+                    Vector3.zero,
+                    Quaternion.identity);
+                // The imported rigs already point fingers along controller +Z
+                // and contain the correct left/right thumb placement.
+                rig.transform.localScale = Vector3.one;
 
                 var handRenderer = rig.GetComponentInChildren<SkinnedMeshRenderer>(true);
                 if (handRenderer == null || handRenderer.bones.Length != 26)
                     throw new InvalidOperationException(
                         $"{side} controller hand does not contain a 26-bone renderer.");
+                // The grip pose is at the palm, not the FBX origin or wrist.
+                var palm = handRenderer.bones.Single(bone => bone.name == (isLeft ? "L_Palm" : "R_Palm"));
+                rig.transform.localPosition -= root.transform.InverseTransformPoint(palm.position);
                 handRenderer.sharedMaterial = handMaterial;
                 foreach (var renderer in rig.GetComponentsInChildren<Renderer>(true))
                     renderer.enabled = renderer == handRenderer;

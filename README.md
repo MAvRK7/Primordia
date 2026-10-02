@@ -34,12 +34,15 @@ Use the SDK, NDK, and JDK installed by Unity Hub. The toolchain bundled with the
 
 5. Open `Assets/Scenes/assembly_scene.unity`. Play Mode can be used for editor-level checks when a compatible OpenXR runtime or simulator is available; use an on-device build for accurate Quest input, performance, and rendering tests.
 
-`assembly_scene.unity` is currently the only enabled scene in **File > Build Profiles > Scene List**. `MainMenu.unity` and `BasicScene.unity` exist in the project but are not currently included in player builds.
+The enabled scenes in **File > Build Profiles > Scene List** are `MainMenu.unity` followed by `assembly_scene.unity`. The game starts at the main menu, and **Play** opens the assembly scene.
 
 ## Build and install an APK
 
 Demo controls: close an empty hand with grip + trigger and swing to punch (8 damage).
 Press left **Y** (or **Home** in the editor) to return to camp with full health.
+The player is invulnerable by default. To enable damage and death, open
+`Assets/Prefabs/Primordia Player.prefab`, select its **Player** child, and uncheck
+**Invulnerable** on **Player Health**. The same toggle can be changed in Play Mode.
 Grab dinosaur loot to deposit it into the shop sack: meat/hide/pelt adds one meat;
 bone/claw/horn and other hard parts add one bone. Every dinosaur drops at least one
 meat and one bone. Buy from the shop's 17-weapon menu, then pick up the weapon from
@@ -48,7 +51,7 @@ the counter before buying another. Recipes cost one or two of each resource.
 1. Connect the Quest by USB, put on the headset, and accept the USB debugging prompt.
 2. In Unity, open **File > Build Profiles**.
 3. Select **Android** and choose **Switch Platform** if Android is not already active.
-4. Confirm that `Assets/Scenes/assembly_scene.unity` is enabled in the Scene List.
+4. Confirm that `Assets/Scenes/MainMenu.unity` is first in the Scene List, followed by `Assets/Scenes/assembly_scene.unity`, with both enabled.
 5. Choose **Build and Run** to install directly to the connected headset, or choose **Build** and save the output as:
 
    ```text
