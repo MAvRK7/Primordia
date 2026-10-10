@@ -128,7 +128,8 @@ public class DinoAI : MonoBehaviour
     // Missing, dead, and sheltered targets cannot be retained or reacquired.
     bool TargetGone(Transform t)
     {
-        return t == null || IsDead(t) || CampsiteSafeZone.Contains(t.position);
+        return t == null || IsDead(t) || CampsiteSafeZone.Contains(t.position) ||
+            (!profile.huntOtherDinosaurs && t.GetComponentInParent<DinoHealth>() != null);
     }
 
     // Clears a gone target and guarantees we cannot sit frozen pointing at a corpse.
@@ -310,7 +311,7 @@ public class DinoAI : MonoBehaviour
         if (pack != null && !TargetGone(pack.SharedTarget))
             return pack.SharedTarget;
 
-        Transform herb = FindNearestHerbivore();
+        Transform herb = profile.huntOtherDinosaurs ? FindNearestHerbivore() : null;
         bool herbOk   = !TargetGone(herb) && CanSense(herb);
 
         Transform chosen = null;
@@ -448,6 +449,8 @@ public class DinoAI : MonoBehaviour
         retaliationTarget = attacker;
         retaliationUntil = Time.time + Mathf.Max(profile.giveUpTimer, 1f);
         lastSensedTime = Time.time;
+        // Damage must wake an animal before the manager's next distance evaluation.
+        state = profile.behaviour == DinoBehaviour.Flees ? State.Flee : State.Chase;
         if (pack != null && profile.behaviour != DinoBehaviour.Flees)
             pack.ReportTarget(attacker, this);
     }

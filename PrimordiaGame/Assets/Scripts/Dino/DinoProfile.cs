@@ -27,6 +27,8 @@ public class DinoProfile : ScriptableObject
     [Tooltip("Predators only. If true, hunts the player first (apex behaviour). " +
              "If false, hunts herbivores first but still switches to the player when sensed.")]
     public bool prefersPlayer = true;
+    [Tooltip("Allow hunting and attacking other dinosaurs. Off for the current gameplay loop.")]
+    public bool huntOtherDinosaurs = false;
 
     [Header("Sight")]
     public float sightRange = 18f;

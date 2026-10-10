@@ -239,7 +239,7 @@ public class DinoAIManager : MonoBehaviour
 
     // ---- Active / sensing gates queried by DinoAI ----
 
-    public bool IsActive(DinoAI dino) => activeSet.Contains(dino);
+    public bool IsActive(DinoAI dino) => dino != null && (dino.InCombat || activeSet.Contains(dino));
 
     public bool MaySense(DinoAI dino)
     {

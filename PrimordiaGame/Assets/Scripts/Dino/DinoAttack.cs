@@ -35,6 +35,7 @@ public class DinoAttack : MonoBehaviour
         if (CampsiteSafeZone.Contains(target.position)) return false;
         var targetHealth = target.GetComponentInParent<PlayerHealth>();
         var targetDino = target.GetComponentInParent<DinoHealth>();
+        if (targetDino != null && !profile.huntOtherDinosaurs) return false;
         if ((targetHealth == null && targetDino == null) ||
             (targetHealth != null && targetHealth.IsDead) || (targetDino != null && targetDino.IsDead)) return false;
         if (Time.time - lastAttackTime < profile.attackCooldown) return false;

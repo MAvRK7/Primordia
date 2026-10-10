@@ -813,8 +813,8 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!136 &1592763407402027387
-CapsuleCollider:
+--- !u!65 &1592763407402027387
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -831,11 +831,9 @@ CapsuleCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 7
-  m_Height: 3
-  m_Direction: 2
-  m_Center: {x: 0, y: 2, z: 0}
+  serializedVersion: 3
+  m_Size: {x: 7.7386184, y: 11.4269996, z: 22.1764864}
+  m_Center: {x: 0.1029806, y: 4.9392644, z: -1.0515938}
 --- !u!54 &5107884676075289244
 Rigidbody:
   m_ObjectHideFlags: 0

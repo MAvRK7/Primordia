@@ -31,6 +31,8 @@ public sealed class MeleeHitbox : MonoBehaviour
 
     void OnTriggerStay(Collider other) => m_Owner?.RegisterHit(other, m_HitCollider);
 
+    void OnTriggerExit(Collider other) => m_Owner?.EndContact(other);
+
     public void SetActive(bool active)
     {
         if (m_HitCollider == null)

@@ -6,6 +6,8 @@ public enum DamageStatus
     None,
 }
 
+public enum CombatImpactKind { Damage, Punch, Stab, Bullet }
+
 /// <summary>
 /// The common damage payload used by guns and melee weapons.
 /// </summary>
@@ -17,13 +19,15 @@ public readonly struct CombatHit
         Vector3 point,
         Vector3 normal,
         Transform attacker,
-        DamageStatus status = DamageStatus.None)
+        DamageStatus status = DamageStatus.None,
+        CombatImpactKind impactKind = CombatImpactKind.Damage)
     {
         Damage = Mathf.Max(0f, damage);
         Point = point;
         Normal = normal.sqrMagnitude > 0f ? normal.normalized : Vector3.up;
         Attacker = attacker;
         Status = status;
+        ImpactKind = impactKind;
     }
 
     public float Damage { get; }
@@ -31,6 +35,7 @@ public readonly struct CombatHit
     public Vector3 Normal { get; }
     public Transform Attacker { get; }
     public DamageStatus Status { get; }
+    public CombatImpactKind ImpactKind { get; }
 }
 
 public interface IDamageable
@@ -55,7 +60,7 @@ public static class CombatDamageResolver
         CombatHit hit,
         out IDamageable damageable)
     {
-        if (!TryGetDamageable(collider, out damageable))
+        if (!TryGetDamageable(collider, out damageable) || hit.Damage <= 0f)
             return false;
 
         damageable.ApplyHit(hit);

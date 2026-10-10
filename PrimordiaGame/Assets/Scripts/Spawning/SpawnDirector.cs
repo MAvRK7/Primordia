@@ -27,6 +27,11 @@ public class SpawnDirector : MonoBehaviour
     [Tooltip("No day/night system exists yet - toggle manually for testing until one is wired in.")]
     public bool isNight = false;
 
+    [Header("Starting Area")]
+    public SpawnTable starterSpawnTable;
+    [Min(0f)] public float starterAreaRadius = 100f;
+    [Min(1)] public int starterAreaCap = 6;
+
     [Header("Initial Population")]
     [Min(0f)] public float initialSpawnDelay = 2f;
     [Min(1)] public int maxSpawnsPerFrame = 1;
@@ -76,6 +81,7 @@ public class SpawnDirector : MonoBehaviour
         if (playerT == null) return;
 
         int effectiveCap = ComputeEffectiveCap();
+        if (InStartingArea(playerT.position)) effectiveCap = Mathf.Min(effectiveCap, starterAreaCap);
 
         UpdateDespawns(playerT);
         if (Time.time >= nextPopulationCheck)
@@ -164,7 +170,7 @@ public class SpawnDirector : MonoBehaviour
 
     void UpdateSpawns(Transform playerT, int effectiveCap)
     {
-        int spawnedThisFrame = 0;
+        int attemptsThisFrame = 0;
         // Every empty slot's timer is independent - check all of them each tick so multiple
         // slots can spawn in the same frame if their timers happen to elapse together.
         for (int i = emptySlotTimers.Count - 1; i >= 0; i--)
@@ -177,7 +183,6 @@ public class SpawnDirector : MonoBehaviour
             {
                 // Slot is filled now - it's no longer an empty slot with a pending timer.
                 emptySlotTimers.RemoveAt(i);
-                if (++spawnedThisFrame >= Mathf.Max(1, maxSpawnsPerFrame)) break;
             }
             else
             {
@@ -185,6 +190,8 @@ public class SpawnDirector : MonoBehaviour
                 // Failed placement should retry soon, not wait another full respawn.
                 emptySlotTimers[i] = Time.time + 2f;
             }
+            // Bound failed placement work as well as successful instantiation on Quest.
+            if (++attemptsThisFrame >= Mathf.Max(1, maxSpawnsPerFrame)) break;
         }
     }
 
@@ -196,14 +203,19 @@ public class SpawnDirector : MonoBehaviour
 
     bool SpawnOne(Transform playerT)
     {
-        if (biomeDef.spawnTable == null) return false;
+        var table = InStartingArea(playerT.position) ? starterSpawnTable : biomeDef.spawnTable;
+        if (table == null) return false;
 
-        GameObject prefab = biomeDef.spawnTable.GetWeightedRandomPrefab();
+        GameObject prefab = table.GetWeightedRandomPrefab();
         if (prefab == null) return false;
 
         var prefabAgent = prefab.GetComponent<NavMeshAgent>();
         if (prefabAgent == null || prefab.GetComponent<DinoAI>() == null) return false;
-        Vector3? point = TryFindSpawnPoint(playerT.position, prefabAgent);
+        bool starterSpecies = starterSpawnTable == null;
+        if (starterSpawnTable != null)
+            foreach (var entry in starterSpawnTable.entries)
+                if (entry.prefab == prefab) { starterSpecies = true; break; }
+        Vector3? point = TryFindSpawnPoint(playerT.position, prefabAgent, starterSpecies);
         if (point == null) return false; // no valid point this attempt; this slot's timer gets rerolled
 
         GameObject instance = Instantiate(prefab, point.Value, Quaternion.identity);
@@ -212,7 +224,7 @@ public class SpawnDirector : MonoBehaviour
         return true;
     }
 
-    Vector3? TryFindSpawnPoint(Vector3 origin, NavMeshAgent prefabAgent)
+    Vector3? TryFindSpawnPoint(Vector3 origin, NavMeshAgent prefabAgent, bool starterSpecies)
     {
         Vector3? lastValidButVisible = null;
 
@@ -220,6 +232,7 @@ public class SpawnDirector : MonoBehaviour
         {
             Vector3? candidate = SampleAnnulusOnNavMesh(origin, prefabAgent);
             if (candidate == null) continue;
+            if (!starterSpecies && InStartingArea(candidate.Value)) continue;
 
             if (CampsiteSafeZone.Contains(candidate.Value) || (campfireSite != null &&
                 Vector3.Distance(candidate.Value, campfireSite.position) < campfireSafeRadius))
@@ -273,6 +286,14 @@ public class SpawnDirector : MonoBehaviour
     }
 
     // ---------------- Helpers ----------------
+
+    bool InStartingArea(Vector3 position)
+    {
+        if (starterSpawnTable == null || campfireSite == null) return false;
+        var offset = position - campfireSite.position;
+        offset.y = 0f;
+        return offset.sqrMagnitude <= starterAreaRadius * starterAreaRadius;
+    }
 
     Transform ResolvePlayer()
     {

@@ -3,9 +3,10 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.XR;
+using UnityEngine.XR.Interaction.Toolkit.Attachment;
 using UnityEngine.XR.Interaction.Toolkit.Interactors.Casters;
 
-/// <summary>Tracks hands and held objects from grip poses while preserving aim poses for rays.</summary>
+/// <summary>Uses grip positions, with aim rotations for visual hands and pointing rays.</summary>
 public static class PrimordiaControllerPoseSetup
 {
     [MenuItem("Tools/Primordia/Player/Fix Controller Grip Poses")]
@@ -48,8 +49,63 @@ public static class PrimordiaControllerPoseSetup
                 InputActionType.PassThrough, $"<XRController>{{{side}Hand}}/deviceRotation",
                 expectedControlType: "Quaternion"));
             driver.updateType = TrackedPoseDriver.UpdateType.UpdateAndBeforeRender;
+            // Track the palm frame separately from the handle channel. Keep
+            // anatomical wrist roll on the mesh and aim rotation on the item.
+            var itemPose = controller.parent.Find(side + " Controller Item Pose");
+            if (itemPose == null)
+            {
+                itemPose = new GameObject(side + " Controller Item Pose").transform;
+                itemPose.SetParent(controller.parent, false);
+            }
+            var itemDriver = itemPose.GetComponent<TrackedPoseDriver>();
+            if (itemDriver == null) itemDriver = itemPose.gameObject.AddComponent<TrackedPoseDriver>();
+            itemDriver.positionInput = new InputActionProperty(new InputAction("Item Grip Position",
+                InputActionType.PassThrough, $"<XRController>{{{side}Hand}}/devicePosition",
+                expectedControlType: "Vector3"));
+            itemDriver.rotationInput = aim.GetComponent<TrackedPoseDriver>().rotationInput;
+            itemDriver.trackingStateInput = driver.trackingStateInput;
+            itemDriver.updateType = TrackedPoseDriver.UpdateType.UpdateAndBeforeRender;
+            var palmGrip = itemPose.Find("Palm Grip Anchor");
+            if (palmGrip == null)
+            {
+                palmGrip = new GameObject("Palm Grip Anchor").transform;
+                palmGrip.SetParent(itemPose, false);
+            }
+            palmGrip.SetLocalPositionAndRotation(
+                Primordia.ControllerHandVisual.PalmGripOffset(side == "Left"), Quaternion.identity);
+            foreach (var attachment in controller.GetComponentsInChildren<InteractionAttachController>(true))
+                attachment.transformToFollow = palmGrip;
             foreach (var caster in controller.GetComponentsInChildren<CurveInteractionCaster>(true))
                 caster.castOrigin = aim;
+            var punch = controller.GetComponent<PlayerPunch>();
+            if (punch != null)
+            {
+                var serializedPunch = new SerializedObject(punch);
+                serializedPunch.FindProperty("aimOrigin").objectReferenceValue = aim;
+                serializedPunch.FindProperty("palmGripOrigin").objectReferenceValue = palmGrip;
+                serializedPunch.ApplyModifiedPropertiesWithoutUndo();
+            }
+            foreach (var hand in controller.GetComponentsInChildren<Primordia.ControllerHandVisual>(true))
+            {
+                var serializedHand = new SerializedObject(hand);
+                serializedHand.FindProperty("m_AimRotationSource").objectReferenceValue = aim;
+                serializedHand.FindProperty("m_PalmGripAnchor").objectReferenceValue = palmGrip;
+                serializedHand.ApplyModifiedPropertiesWithoutUndo();
+            }
+            foreach (var image in controller.GetComponentsInChildren<UnityEngine.UI.Image>(true))
+            {
+                if (image.sprite != null) continue;
+                string spritePath = image.name switch
+                {
+                    "Radial" => "UI/Joystick BG.png",
+                    "Radial Icon" => "Icons/Chevron.png",
+                    "Click" => "UI/Circle_60x60 Outline.png",
+                    "Icon" when image.transform.parent.name == "Click" => "UI/CircleMask.png",
+                    _ => null
+                };
+                if (spritePath != null)
+                    image.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/VRTemplateAssets/Sprites/" + spritePath);
+            }
         }
     }
 }
