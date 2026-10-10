@@ -4,8 +4,8 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 {
     public bool IsDead { get; private set; }
     public float maxHealth = 100f;
-    [Tooltip("Ignore incoming damage while enabled. Disable to test normal combat and death.")]
-    public bool invulnerable = true;
+    [Tooltip("Ignore incoming damage while enabled. Controlled by Settings > Invulnerability (dev) in the main menu.")]
+    public bool invulnerable = false;
     private float currentHealth;
     Camera playerCamera;
 
@@ -35,6 +35,19 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
     public event System.Action<CombatHit> damaged;
     public event System.Action died;
+
+    void OnEnable()
+    {
+        invulnerable = DevelopmentSettings.InvulnerabilityEnabled;
+        DevelopmentSettings.InvulnerabilityChanged += SetInvulnerability;
+    }
+
+    void OnDisable()
+    {
+        DevelopmentSettings.InvulnerabilityChanged -= SetInvulnerability;
+    }
+
+    void SetInvulnerability(bool enabled) => invulnerable = enabled;
 
     void Start()
     {

@@ -40,9 +40,10 @@ The enabled scenes in **File > Build Profiles > Scene List** are `MainMenu.unity
 
 Demo controls: close an empty hand with grip + trigger and swing to punch (8 damage).
 Press left **Y** (or **Home** in the editor) to return to camp with full health.
-The player is invulnerable by default. To enable damage and death, open
-`Assets/Prefabs/Primordia Player.prefab`, select its **Player** child, and uncheck
-**Invulnerable** on **Player Health**. The same toggle can be changed in Play Mode.
+Player damage is enabled by default, and the left-wrist health bar shows remaining
+health. For testing, open **Settings** in the main menu and switch
+**Invulnerability (dev)** to **ON**. This setting is saved across launches; switch
+it **OFF** to restore normal damage and death. The campsite remains a safe zone.
 Grab dinosaur loot to deposit it into the shop sack: meat/hide/pelt adds one meat;
 bone/claw/horn and other hard parts add one bone. Every dinosaur drops at least one
 meat and one bone. Buy from the shop's 17-weapon menu, then pick up the weapon from

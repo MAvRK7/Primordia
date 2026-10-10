@@ -107,5 +107,17 @@ public static class PrimordiaControllerPoseSetup
                     image.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/VRTemplateAssets/Sprites/" + spritePath);
             }
         }
+
+        var health = root.GetComponentInChildren<PlayerHealth>(true);
+        var leftController = root.GetComponentsInChildren<Transform>(true)
+            .Single(t => t.name == "Left Controller");
+        var leftHand = leftController.GetComponentInChildren<Primordia.ControllerHandVisual>(true);
+        if (health != null && leftHand != null)
+        {
+            var display = health.GetComponent<WristHealthDisplay>();
+            if (display == null) display = health.gameObject.AddComponent<WristHealthDisplay>();
+            display.Configure(health, leftHand.transform, health.GetComponentInChildren<Camera>(true));
+            EditorUtility.SetDirty(display);
+        }
     }
 }

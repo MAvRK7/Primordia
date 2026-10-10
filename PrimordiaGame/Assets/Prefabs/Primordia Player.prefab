@@ -4267,6 +4267,7 @@ GameObject:
   - component: {fileID: 7116469138195844208}
   - component: {fileID: 5060678003093992713}
   - component: {fileID: 4435227458008931858}
+  - component: {fileID: 9100000000000000500}
   - component: {fileID: 5986658092398342662}
   m_Layer: 2
   m_Name: Player
@@ -4419,7 +4420,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
   maxHealth: 100
-  invulnerable: 1
+  invulnerable: 0
+--- !u!114 &9100000000000000500
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2263039251309733239}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 727421a02f024c7caa117a8f7121cc58, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::WristHealthDisplay
+  m_Health: {fileID: 4435227458008931858}
+  m_Hand: {fileID: 1297278349655800462}
+  m_ViewCamera: {fileID: 24287339453749942}
+  m_WristOffset: {x: 0, y: 0, z: -0.025}
+  m_SurfaceOffset: 0.035
+  m_DisplayScale: 0.00065
 --- !u!114 &5986658092398342662
 MonoBehaviour:
   m_ObjectHideFlags: 0
