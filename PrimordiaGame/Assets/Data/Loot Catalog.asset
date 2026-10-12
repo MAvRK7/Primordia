@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dec2725e9ff05492baf4f1d69d510330, type: 3}
+  m_Name: Loot Catalog
+  m_EditorClassIdentifier: Assembly-CSharp::LootCatalog
+  entries:
+  - partName: Bone
+    prefab: {fileID: 5418720778903925299, guid: ca35b4b6729dc4dec865bd280dfd7fec, type: 3}
+  - partName: Giant Bone
+    prefab: {fileID: 4448354501237988338, guid: d864d6040a70c4f4e81ebee1702b5996, type: 3}
+  - partName: Ancient Bone
+    prefab: {fileID: 1500429226079518475, guid: 7cad7294f562f4ac48b6a9e125648b6b, type: 3}
+  - partName: Hide
+    prefab: {fileID: 6240850810634034686, guid: 4411da0b8d3cd48f9a3c3508305f17a2, type: 3}
+  - partName: Alpha Pelt
+    prefab: {fileID: 6367000527943866833, guid: 4886836ec7c29474d93be01c982b9d6b, type: 3}
+  - partName: Sickle Claw
+    prefab: {fileID: 3052352427843234073, guid: 6e675923e74164bd4b51c8fa8bf58a50, type: 3}
+  - partName: Horn
+    prefab: {fileID: 7152557797243477295, guid: 1c37712dae5734a4aba838adf5d2a61e, type: 3}
+  - partName: Flawless Horn
+    prefab: {fileID: 7519284734514543550, guid: c8ec4bb0fabbc4ffbb6c172c9095cc02, type: 3}
+  - partName: Crest
+    prefab: {fileID: 5478123701687809773, guid: cf064c6edd80b4ca2b342c91ea201bea, type: 3}
+  - partName: Pristine Crest
+    prefab: {fileID: 5769556508957678561, guid: 2a61b1e04cf8e49318372f0002b5a853, type: 3}
+  - partName: Back-Plate
+    prefab: {fileID: 9184640662779183479, guid: 0c8d6b19408584dac9311ba5ccd48a78, type: 3}
+  - partName: Twin Tail-Spike
+    prefab: {fileID: 237298227463329757, guid: ff936bf5328d747fba584c7b65006a8e, type: 3}
+  - partName: Apex Fang
+    prefab: {fileID: 8122108402479981711, guid: 0bfab7c07986949a6bf566531ce5016d, type: 3}
+  - partName: Rex Skull
+    prefab: {fileID: 8789114131945817666, guid: 784646fca244349429d4f0efd040d744, type: 3}

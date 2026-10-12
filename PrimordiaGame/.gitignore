@@ -57,3 +57,12 @@ crashlytics-build.properties
 
 # Local Claude-generated configuration and skills
 /.claude/
+
+.mcp.json
+Assets/Plugins/NuGet/McpPlugin*
+
+Assets/Plugins/NuGet/
+Assets/Plugins/NuGet.meta
+.mcp.json
+.claude/
+AI-Game-Dev-Installer.unitypackage

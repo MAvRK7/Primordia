@@ -16,6 +16,8 @@ MonoBehaviour:
   prefersPlayer: 1
   sightRange: 14
   sightAngle: 60
+  nightSightMultiplier: 0.5
+  crouchSightMultiplier: 0.5
   hearingRadius: 6
   noiseMemory: 3
   giveUpTimer: 5
@@ -24,6 +26,17 @@ MonoBehaviour:
   attackCooldown: 1.5
   attackDamage: 80
   moveSpeed: 2.5
+  idleSound: {fileID: 8300000, guid: 9af4a71d5142b8e40a47a2ede0a5f058, type: 3}
+  chaseSound: {fileID: 8300000, guid: 64052372f575dda4191f8c8b72d76ea9, type: 3}
+  attackSound: {fileID: 8300000, guid: a7a08b572fc031642a1a448a4303f519, type: 3}
+  hurtSound: {fileID: 8300000, guid: f620433c909d1f340909351b1b152747, type: 3}
+  deathSound: {fileID: 8300000, guid: 5f4bad65492ce384093ae3402809bbbc, type: 3}
+  fleeSound: {fileID: 0}
+  packFormSound: {fileID: 0}
+  footstepSound: {fileID: 0}
+  idleSoundInterval: 8
+  footstepInterval: 2
+  corpseAnimFreezeDelay: 5
   health: 10000
   xpReward: 80
   drops:
@@ -33,13 +46,13 @@ MonoBehaviour:
     chance: 1
     isRare: 0
   - partName: Bone
-    minAmount: 4
-    maxAmount: 8
+    minAmount: 6
+    maxAmount: 10
     chance: 1
     isRare: 0
   - partName: Hide
-    minAmount: 6
-    maxAmount: 10
+    minAmount: 4
+    maxAmount: 6
     chance: 1
     isRare: 0
   - partName: Ancient Bone

@@ -52,7 +52,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 0
   serializedVersion: 3
-  m_Size: {x: 0.044145055, y: 0.09629436, z: 0.44000006}
+  m_Size: {x: 0.0441450541, y: 0.0962943656, z: 0.44}
   m_Center: {x: 0, y: 0, z: 0.78}
 --- !u!114 &6541124951314387417
 MonoBehaviour:
@@ -92,13 +92,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4685291277933366833}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.3999999}
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: -1.30000006e-09, y: -1.9500001e-09, z: -0.40000007}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 745194699507584702}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!1 &5720583910016312169
 GameObject:
   m_ObjectHideFlags: 0
@@ -107,6 +107,7 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+  - component: {fileID: 81000000000000001}
   - component: {fileID: 745194699507584702}
   - component: {fileID: 6616186954674800579}
   - component: {fileID: 82363328122646822}
@@ -184,8 +185,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.043279465, y: 0.09440623, z: 1.9999999}
-  m_Center: {x: 0, y: 0, z: 0.000000059604645}
+  m_Size: {x: 0.0432794648, y: 0.0944062408, z: 2}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &7139000390301977017
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -310,7 +311,7 @@ MonoBehaviour:
   m_StartingSingleGrabTransformers: []
   m_StartingMultipleGrabTransformers: []
   m_AddDefaultGrabTransformers: 1
-  m_FarAttachMode: 0
+  m_FarAttachMode: 1
   m_LimitLinearVelocity: 0
   m_LimitAngularVelocity: 0
   m_MaxLinearVelocityDelta: 10
@@ -442,27 +443,27 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: fa77236dfdd59419799863bcc046c918, type: 3}
       propertyPath: m_LocalScale.x
-      value: 79.999954
+      value: 79.999958
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: fa77236dfdd59419799863bcc046c918, type: 3}
       propertyPath: m_LocalScale.y
-      value: 79.999954
+      value: 79.999958
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: fa77236dfdd59419799863bcc046c918, type: 3}
       propertyPath: m_LocalScale.z
-      value: 79.999954
+      value: 79.999958
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: fa77236dfdd59419799863bcc046c918, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.0000000018626451
+      value: 5.62645129e-10
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: fa77236dfdd59419799863bcc046c918, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.00000062957406
+      value: -6.31524092e-07
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: fa77236dfdd59419799863bcc046c918, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.12799793
+      value: -0.127997986
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: fa77236dfdd59419799863bcc046c918, type: 3}
       propertyPath: m_LocalRotation.w
@@ -506,3 +507,26 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: fa77236dfdd59419799863bcc046c918, type: 3}
   m_PrefabInstance: {fileID: 5909203683996342306}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &81000000000000001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5720583910016312169}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b4bf7b45fbf84426a16ffe857bd2167f, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  m_InwardOffset: 0.0285
+  m_HeightOffset: -0.003
+  m_ForwardOffset: 0.039
+  m_FingerCurl: 1
+  m_RingCurlScale: 0.9
+  m_LittleCurlScale: 0.75
+  m_ThumbCurlScale: 1
+  m_HandPitch: 0
+  m_GripFingerAngles: {x: 0, y: 55, z: 60}
+  m_IndexCurlScale: 1
+  m_ThumbOpposition: {x: -15, y: 0}

@@ -139,6 +139,16 @@ public static class PrimordiaIslandDinoSetup
             manager.activeDistance = 100f;
             manager.maxActive = 12;
             manager.senseFrameBuckets = 4;
+            // Every dino sits beyond the manager's 45m cull distance from camp, so its
+            // animator culling froze them all; rely on each Animator's own culling mode.
+            manager.enableAnimatorCulling = false;
+            // Rebuilding the authored population must retain nearby encounters.
+            var oldDirector = oldRoot != null ? oldRoot.GetComponent<SpawnDirector>() : null;
+            if (oldDirector != null)
+            {
+                var director = population.AddComponent<SpawnDirector>();
+                EditorUtility.CopySerialized(oldDirector, director);
+            }
             if (oldRoot != null) Undo.DestroyObjectImmediate(oldRoot);
             EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveScene(scene);

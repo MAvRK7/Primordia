@@ -27,10 +27,16 @@ public class DinoProfile : ScriptableObject
     [Tooltip("Predators only. If true, hunts the player first (apex behaviour). " +
              "If false, hunts herbivores first but still switches to the player when sensed.")]
     public bool prefersPlayer = true;
+    [Tooltip("Allow hunting and attacking other dinosaurs. Off for the current gameplay loop.")]
+    public bool huntOtherDinosaurs = false;
 
     [Header("Sight")]
     public float sightRange = 18f;
     public float sightAngle = 70f;      // half-angle each side of facing
+    [Tooltip("Sight range is multiplied by this at night (DinoAIManager.isNight).")]
+    public float nightSightMultiplier = 0.5f;
+    [Tooltip("Sight range vs the PLAYER is multiplied by this while they crouch (DinoAIManager.playerIsCrouching).")]
+    public float crouchSightMultiplier = 0.5f;
 
     [Header("Hearing")]
     public float hearingRadius = 18f;
@@ -54,7 +60,14 @@ public class DinoProfile : ScriptableObject
     public AudioClip attackSound;       // on each actual attack
     public AudioClip hurtSound;         // on taking non-lethal damage
     public AudioClip deathSound;        // on death
+    public AudioClip fleeSound;         // once, on entering Flee (skittish species)
+    public AudioClip packFormSound;     // once, when a pack rallies onto a fresh target (raptor)
+    public AudioClip footstepSound;     // one step; retriggered by distance travelled
     public float idleSoundInterval = 8f;   // rough seconds between idle calls (randomized)
+    public float footstepInterval = 2f;    // metres travelled per footstep sound
+
+    [Header("Corpse")]
+    public float corpseAnimFreezeDelay = 5f;   // disable the Animator this long after death (0 = never)
 
     [Header("Stats")]
     public float health = 45f;

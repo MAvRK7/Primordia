@@ -3,7 +3,12 @@ guid: 73a0441fed061427a9afd6d1c344536a
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: "\u0421cudgel"
+    second: {fileID: 2100000, guid: f06e0f07b4cb045ba8573eaa7b2a2d62, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

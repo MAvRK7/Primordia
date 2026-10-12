@@ -3,6 +3,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.XR.Interaction.Toolkit.Attachment;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
 /// <summary>
@@ -51,6 +52,7 @@ public static class PrimordiaWeaponSetup
         public float StrikeStart { get; }
         public bool FlipForward { get; }
         public bool IsReference { get; }
+        public bool RollBladeUpright { get; }
 
         public WeaponSpec(
             string assetName,
@@ -75,7 +77,8 @@ public static class PrimordiaWeaponSetup
             float muzzleHeight,
             float strikeStart,
             bool flipForward,
-            bool isReference = false)
+            bool isReference = false,
+            bool rollBladeUpright = false)
         {
             ModelPath = modelPath;
             DefinitionPath = k_WeaponDataFolder + "/" + assetName + ".asset";
@@ -100,6 +103,7 @@ public static class PrimordiaWeaponSetup
             StrikeStart = strikeStart;
             FlipForward = flipForward;
             IsReference = isReference;
+            RollBladeUpright = rollBladeUpright;
         }
     }
 
@@ -140,7 +144,7 @@ public static class PrimordiaWeaponSetup
             ammoType: AmmoType.Light,
             magazineCapacity: 10,
             automatic: false,
-            targetLength: 0.26f,
+            targetLength: 0.195f,
             mass: 0.9f,
             gripHeight: 0.22f,
             gripForward: 0.34f,
@@ -159,7 +163,7 @@ public static class PrimordiaWeaponSetup
             ammoType: AmmoType.Light,
             magazineCapacity: 8,
             automatic: false,
-            targetLength: 0.78f,
+            targetLength: 0.585f,
             mass: 3.2f,
             gripHeight: 0.28f,
             gripForward: 0.48f,
@@ -329,7 +333,8 @@ public static class PrimordiaWeaponSetup
             targetLength: 1.08f,
             mass: 1.9f,
             gripForward: 0.12f,
-            strikeStart: 0.28f),
+            strikeStart: 0.28f,
+            rollBladeUpright: true),
         MeleeWeapon(
             "Spike Maul",
             "Assets/Models/melee/mace-low/source/MaceLow.fbx",
@@ -372,7 +377,8 @@ public static class PrimordiaWeaponSetup
             mass: 5.5f,
             gripForward: 0.12f,
             strikeStart: 0.24f,
-            flipForward: true),
+            flipForward: true,
+            rollBladeUpright: true),
         MeleeWeapon(
             "Forged Longsword",
             "Assets/Models/melee/sword/source/sword.fbx",
@@ -452,6 +458,7 @@ public static class PrimordiaWeaponSetup
         EnsureFolder(k_WeaponPrefabFolder);
 
         AssetDatabase.ImportAsset(k_InputActionsPath, ImportAssetOptions.ForceSynchronousImport);
+        PrimordiaWeaponMaterials.EnsureModelMaterials();
 
         foreach (var spec in k_WeaponSpecs)
         {
@@ -544,7 +551,8 @@ public static class PrimordiaWeaponSetup
         float strikeStart,
         float noiseRange = 5f,
         bool flipForward = false,
-        bool isReference = false)
+        bool isReference = false,
+        bool rollBladeUpright = false)
     {
         return new WeaponSpec(
             assetName,
@@ -569,7 +577,8 @@ public static class PrimordiaWeaponSetup
             muzzleHeight: 0.5f,
             strikeStart,
             flipForward,
-            isReference);
+            isReference,
+            rollBladeUpright);
     }
 
     static void CreateWeaponRig(WeaponSpec spec, WeaponDefinition definition)
@@ -594,22 +603,18 @@ public static class PrimordiaWeaponSetup
             body.centerOfMass = visualBounds.center;
 
             var attach = CreateChild(root.transform, "Attach");
+            var gripPose = PrimordiaWeaponGripCalibration.Get(spec.DisplayName);
             attach.SetLocalPositionAndRotation(
-                new Vector3(
-                    visualBounds.center.x,
-                    Mathf.Lerp(visualBounds.min.y, visualBounds.max.y, spec.GripHeight),
-                    Mathf.Lerp(visualBounds.min.z, visualBounds.max.z, spec.GripForward)),
-                Quaternion.Euler(0f, 180f, 0f));
+                gripPose.HandlePosition,
+                Quaternion.identity);
 
             var muzzle = CreateChild(root.transform, "Muzzle");
             muzzle.SetLocalPositionAndRotation(
-                new Vector3(
-                    visualBounds.center.x,
-                    Mathf.Lerp(visualBounds.min.y, visualBounds.max.y, spec.MuzzleHeight),
-                    visualBounds.max.z + 0.012f),
+                gripPose.MuzzlePosition,
                 Quaternion.identity);
 
             var grab = root.AddComponent<XRGrabInteractable>();
+            PrimordiaWeaponGripCalibration.ConfigureHand(root, spec.DisplayName);
             grab.attachTransform = attach;
             ConfigureHeldPhysics(root, grab);
 
@@ -692,13 +697,11 @@ public static class PrimordiaWeaponSetup
 
             var attach = CreateChild(root.transform, "Attach");
             attach.SetLocalPositionAndRotation(
-                new Vector3(
-                    visualBounds.center.x,
-                    visualBounds.center.y,
-                    Mathf.Lerp(visualBounds.min.z, visualBounds.max.z, spec.GripForward)),
-                Quaternion.identity);
+                PrimordiaWeaponGripCalibration.Get(spec.DisplayName).HandlePosition,
+                Quaternion.Euler(90f, 0f, 0f));
 
             var grab = root.AddComponent<XRGrabInteractable>();
+            PrimordiaWeaponGripCalibration.ConfigureHand(root, spec.DisplayName);
             grab.attachTransform = attach;
             ConfigureHeldPhysics(root, grab);
 
@@ -766,9 +769,11 @@ public static class PrimordiaWeaponSetup
         visual.transform.SetParent(root.transform, false);
         visual.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
         visual.transform.localScale = Vector3.one;
-        OrientAndScaleAlongForward(root.transform, visual.transform, spec.TargetLength);
-        if (spec.FlipForward)
-            visual.transform.localRotation = Quaternion.Euler(0f, 180f, 0f) * visual.transform.localRotation;
+        // Imported roots and children use different axes. Preserve child poses
+        // and apply the measured visual rotation for this particular model.
+        visual.transform.localRotation = PrimordiaWeaponGripCalibration.Get(spec.DisplayName).ModelRotation;
+        var modelBounds = CalculateLocalBounds(root.transform, visual.GetComponentsInChildren<Renderer>(true));
+        visual.transform.localScale = Vector3.one * spec.TargetLength / Mathf.Max(modelBounds.size.z, 0.0001f);
 
         var renderers = visual.GetComponentsInChildren<Renderer>(true);
         if (renderers.Length == 0)
@@ -777,12 +782,23 @@ public static class PrimordiaWeaponSetup
         var visualBounds = CalculateLocalBounds(root.transform, renderers);
         visual.transform.localPosition -= visualBounds.center;
 
+        if (spec.DisplayName == "Apex Rifle")
+        {
+            // The imported rear support is mounted to one side, through the
+            // left wrist. Centre the assembly and lift it clear of either hand.
+            var supportOffset = root.transform.TransformVector(new Vector3(0.03357696815f, 0.01f, 0f));
+            foreach (var part in visual.GetComponentsInChildren<Transform>(true))
+                if (part.name == "Mango trasero_high" || part.name == "Sop Mango Trasero_high")
+                    part.position += supportOffset;
+        }
+
         foreach (var camera in visual.GetComponentsInChildren<Camera>(true))
             camera.enabled = false;
         foreach (var light in visual.GetComponentsInChildren<Light>(true))
             light.enabled = false;
 
         EnsureNonNullModelMaterials(renderers);
+        PrimordiaWeaponMaterials.ApplyToVisual(spec.ModelPath, visual);
         return visual;
     }
 
@@ -891,6 +907,10 @@ public static class PrimordiaWeaponSetup
             var model = (GameObject)PrefabUtility.InstantiatePrefab(modelAsset);
             model.name = "Visual";
             model.transform.SetParent(root.transform, false);
+            // This FBX imports with its barrel along -Z. Keep its authored up axis
+            // while turning the barrel towards the +Z muzzle and controller aim.
+            model.transform.SetLocalPositionAndRotation(
+                Vector3.zero, Quaternion.Euler(-90f, 180f, 0f));
             OrientAndScaleAlongForward(root.transform, model.transform, 0.28f);
 
             var visualBounds = CalculateLocalBounds(root.transform, model.GetComponentsInChildren<Renderer>());
@@ -902,11 +922,8 @@ public static class PrimordiaWeaponSetup
             physicalCollider.size = visualBounds.size;
 
             var attach = CreateChild(root.transform, "Attach");
-            attach.localPosition = new Vector3(
-                0f,
-                -visualBounds.extents.y * 0.3f,
-                -visualBounds.extents.z * 0.2f);
-            attach.localRotation = Quaternion.identity;
+            attach.SetLocalPositionAndRotation(
+                new Vector3(0f, -0.06f, -0.09f), Quaternion.identity);
 
             var firePoint = CreateChild(root.transform, "Muzzle");
             firePoint.localPosition = new Vector3(
@@ -1003,16 +1020,17 @@ public static class PrimordiaWeaponSetup
             var attach = root.transform.Find("handle_anchor");
             if (attach == null)
                 attach = CreateChild(root.transform, "handle_anchor");
-            // The knife mesh extends along local +Y. Rotating the attach frame -90 degrees
-            // makes the blade extend along the controller-hand's +Z grip direction. The
-            // 18 mm offset seats the handle inside the low-poly controller hand's palm.
+            // The handle and blade extend along +Y. Keep that axis perpendicular
+            // to controller aim (+Z) so the fist closes around the handle and the
+            // blade rises above the thumb, rather than passing through the palm.
             attach.SetLocalPositionAndRotation(
-                new Vector3(0f, 0.018f, 0f),
-                Quaternion.Euler(-90f, 0f, 0f));
+                PlayerPunch.KnifeHandlePosition,
+                Quaternion.identity);
             grab.attachTransform = attach;
             ConfigureHeldPhysics(root, grab);
 
             var audioSource = root.GetComponent<AudioSource>();
+            PrimordiaWeaponGripCalibration.ConfigureHand(root, "Knife");
             if (audioSource == null)
             {
                 audioSource = root.AddComponent<AudioSource>();
@@ -1087,19 +1105,42 @@ public static class PrimordiaWeaponSetup
             if (attach == null)
                 attach = CreateChild(root.transform, "Attach");
 
-            // The controller grip frame points opposite the revolver root's authored forward
-            // direction. Rotate the attach frame 180 degrees and move it 18 mm deeper so the
-            // handle sits inside the low-poly hand rather than floating in front of the palm.
+            // Normalize the imported -Z barrel to +Z before seating the hand on the
+            // handle. XRI applies the inverse attach rotation, so rotating Attach
+            // by 180 degrees would point the muzzle back towards the player.
+            var visual = root.transform.Find("Visual");
+            if (visual == null)
+                throw new InvalidOperationException("The Scrap Revolver prefab has no visual transform.");
+            var gripPose = PrimordiaWeaponGripCalibration.Get("Scrap Revolver");
+            PrimordiaWeaponGripCalibration.ConfigureHand(root, "Scrap Revolver");
+            visual.localRotation = gripPose.ModelRotation;
+            visual.localPosition = Vector3.zero;
+            visual.localScale = Vector3.one;
+            var modelBounds = CalculateLocalBounds(root.transform, visual.GetComponentsInChildren<Renderer>(true));
+            visual.localScale *= 0.28f / Mathf.Max(modelBounds.size.z, 0.0001f);
+            visual.localPosition -= CalculateLocalBounds(
+                root.transform, visual.GetComponentsInChildren<Renderer>(true)).center;
+            var visualBounds = CalculateLocalBounds(
+                root.transform, visual.GetComponentsInChildren<Renderer>(true));
+            var physical = root.GetComponent<BoxCollider>();
+            if (physical != null)
+            {
+                physical.center = visualBounds.center;
+                physical.size = visualBounds.size;
+            }
+
             attach.SetLocalPositionAndRotation(
-                new Vector3(0f, -0.029f, -0.046f),
-                Quaternion.Euler(0f, 180f, 0f));
+                gripPose.HandlePosition,
+                Quaternion.identity);
             grab.attachTransform = attach;
             ConfigureHeldPhysics(root, grab);
 
             var muzzle = root.transform.Find("Muzzle");
             if (muzzle == null)
                 throw new InvalidOperationException("The Scrap Revolver prefab has no muzzle transform.");
-            muzzle.localRotation = Quaternion.identity;
+            muzzle.SetLocalPositionAndRotation(
+                gripPose.MuzzlePosition,
+                Quaternion.identity);
 
             PrefabUtility.SaveAsPrefabAsset(root, k_ScrapRevolverPrefabPath);
         }
@@ -1112,6 +1153,7 @@ public static class PrimordiaWeaponSetup
     static void ConfigureHeldPhysics(GameObject root, XRGrabInteractable grab)
     {
         grab.useDynamicAttach = false;
+        grab.farAttachMode = InteractableFarAttachMode.Near;
         grab.movementType = XRBaseInteractable.MovementType.Kinematic;
         grab.attachEaseInTime = 0.05f;
         grab.smoothPosition = false;
@@ -1213,15 +1255,13 @@ public static class PrimordiaWeaponSetup
 
         foreach (var renderer in renderers)
         {
-            var bounds = renderer.bounds;
-            for (var x = -1; x <= 1; x += 2)
-            for (var y = -1; y <= 1; y += 2)
-            for (var z = -1; z <= 1; z += 2)
+            var filter = renderer.GetComponent<MeshFilter>();
+            if (filter == null || filter.sharedMesh == null) continue;
+            // A rotated renderer's world AABB includes empty corners. Measuring
+            // those again inflated the Pump collider and misplaced its handle.
+            foreach (var vertex in filter.sharedMesh.vertices)
             {
-                var worldPoint = bounds.center + Vector3.Scale(
-                    bounds.extents,
-                    new Vector3(x, y, z));
-                var localPoint = root.InverseTransformPoint(worldPoint);
+                var localPoint = root.InverseTransformPoint(filter.transform.TransformPoint(vertex));
 
                 if (!hasPoint)
                 {
@@ -1234,7 +1274,7 @@ public static class PrimordiaWeaponSetup
                 }
             }
         }
-
+        if (!hasPoint) throw new InvalidOperationException("Weapon visual contains no readable mesh geometry.");
         return localBounds;
     }
 

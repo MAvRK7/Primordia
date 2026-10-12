@@ -521,7 +521,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 364a613a8d65a38469900c9133e5e4d1, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 9fe4f9eb838ecb4419917ae68007ca2d, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -596,7 +596,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: cf1def1317ea06e4ca9ae70ca079cf15, type: 3}
+  m_Sprite: {fileID: 21300000, guid: c587cac8808c8b745adbae420e9acc83, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -2273,7 +2273,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: cf1def1317ea06e4ca9ae70ca079cf15, type: 3}
+  m_Sprite: {fileID: 21300000, guid: c587cac8808c8b745adbae420e9acc83, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -3324,7 +3324,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 5c6ccbe197b55e8488026ad8ba0e9e76, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 79dfa83adcf72d541946168c849ba331, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -3494,7 +3494,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: d0aadb92d3d05c14b8125b75d8c3e487, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 7edfa9a28dcc4584ba5194e74c74f93c, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -4267,6 +4267,7 @@ GameObject:
   - component: {fileID: 7116469138195844208}
   - component: {fileID: 5060678003093992713}
   - component: {fileID: 4435227458008931858}
+  - component: {fileID: 9100000000000000500}
   - component: {fileID: 5986658092398342662}
   m_Layer: 2
   m_Name: Player
@@ -4309,8 +4310,8 @@ MonoBehaviour:
   m_Camera: {fileID: 24287339453749942}
   m_OriginBaseGameObject: {fileID: 2263039251309733239}
   m_CameraFloorOffsetObject: {fileID: 2952164074279445590}
-  m_RequestedTrackingOriginMode: 0
-  m_CameraYOffset: 1.36144
+  m_RequestedTrackingOriginMode: 2
+  m_CameraYOffset: 1.7
 --- !u!143 &7019443130877080315
 CharacterController:
   m_ObjectHideFlags: 0
@@ -4329,13 +4330,13 @@ CharacterController:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Height: 1.36144
+  m_Height: 1.7
   m_Radius: 0.1
   m_SlopeLimit: 45
   m_StepOffset: 0.5
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0.76072, z: 0}
+  m_Center: {x: 0, y: 0.93, z: 0}
 --- !u!114 &8320709290768434812
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4419,6 +4420,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
   maxHealth: 100
+  invulnerable: 0
+--- !u!114 &9100000000000000500
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2263039251309733239}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 727421a02f024c7caa117a8f7121cc58, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::WristHealthDisplay
+  m_Health: {fileID: 4435227458008931858}
+  m_Hand: {fileID: 1297278349655800462}
+  m_ViewCamera: {fileID: 24287339453749942}
+  m_WristOffset: {x: 0, y: 0, z: -0.025}
+  m_SurfaceOffset: 0.035
+  m_DisplayScale: 0.00065
 --- !u!114 &5986658092398342662
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4754,8 +4774,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2512898501969254160}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: 0, y: 0, z: -0.05}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -6437,7 +6457,7 @@ Transform:
   m_GameObject: {fileID: 2952164074279445590}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.36144, z: 0}
+  m_LocalPosition: {x: 0, y: 1.7, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -6451,6 +6471,10 @@ Transform:
   - {fileID: 4285636012887162175}
   - {fileID: 3379985905058396884}
   - {fileID: 6431554882881594987}
+  - {fileID: 80000000000000002}
+  - {fileID: 80000000000000005}
+  - {fileID: 80000000000000008}
+  - {fileID: 80000000000000011}
   m_Father: {fileID: 2262940341253614668}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3010515659426875304
@@ -11464,7 +11488,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 792f6c7eaa1a4b82abf8351559ac97eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_TransformToFollow: {fileID: 6569834178011084334}
+  m_TransformToFollow: {fileID: 80000000000000016}
   m_MotionStabilizationMode: 1
   m_PositionStabilization: 0.25
   m_AngleStabilization: 20
@@ -11535,7 +11559,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef20135915079454985abea5a2ec8967, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_CastOrigin: {fileID: 6569834178011084334}
+  m_CastOrigin: {fileID: 80000000000000005}
   m_EnableStabilization: 1
   m_PositionStabilization: 0.25
   m_AngleStabilization: 20
@@ -15599,29 +15623,45 @@ MonoBehaviour:
   m_UpdateType: 0
   m_IgnoreTrackingState: 0
   m_PositionInput:
-    m_UseReference: 1
+    m_UseReference: 0
     m_Action:
-      m_Name: Position
-      m_Type: 0
+      m_Name: Grip Position
+      m_Type: 2
       m_ExpectedControlType: Vector3
-      m_Id: cd22b81e-c39a-4170-bdbf-33b5a06ea86f
+      m_Id: 9972a9c7-47ca-4721-b900-af24e2bb4181
       m_Processors: 
       m_Interactions: 
-      m_SingletonActionBindings: []
+      m_SingletonActionBindings:
+      - m_Name: 
+        m_Id: b1dd66be-f227-4108-b832-75e46104bfb2
+        m_Path: <XRController>{LeftHand}/devicePosition
+        m_Interactions: 
+        m_Processors: 
+        m_Groups: 
+        m_Action: Grip Position
+        m_Flags: 0
       m_Flags: 0
-    m_Reference: {fileID: -2024308242397127297, guid: c348712bda248c246b8c49b3db54643f, type: 3}
+    m_Reference: {fileID: 0}
   m_RotationInput:
-    m_UseReference: 1
+    m_UseReference: 0
     m_Action:
-      m_Name: Rotation
-      m_Type: 0
+      m_Name: Grip Rotation
+      m_Type: 2
       m_ExpectedControlType: Quaternion
-      m_Id: 04fa80c1-7876-441c-8416-c5ea3caea5c4
+      m_Id: d8091e84-a8b6-479b-b87e-66a4e5fad0bf
       m_Processors: 
       m_Interactions: 
-      m_SingletonActionBindings: []
+      m_SingletonActionBindings:
+      - m_Name: 
+        m_Id: fc66f553-c1c9-4bf8-b037-8ee04847e7df
+        m_Path: <XRController>{LeftHand}/deviceRotation
+        m_Interactions: 
+        m_Processors: 
+        m_Groups: 
+        m_Action: Grip Rotation
+        m_Flags: 0
       m_Flags: 0
-    m_Reference: {fileID: 8248158260566104461, guid: c348712bda248c246b8c49b3db54643f, type: 3}
+    m_Reference: {fileID: 0}
   m_TrackingStateInput:
     m_UseReference: 1
     m_Action:
@@ -15667,9 +15707,13 @@ MonoBehaviour:
   grip: {fileID: 6558622148059887818, guid: c348712bda248c246b8c49b3db54643f, type: 3}
   trigger: {fileID: -4289430672226363583, guid: c348712bda248c246b8c49b3db54643f, type: 3}
   isTracked: {fileID: 840156964685210860, guid: c348712bda248c246b8c49b3db54643f, type: 3}
-  damage: 8
+  damage: 12
   radius: 0.12
   minimumSpeed: 1.2
+  butcherKnifeModel: {fileID: 3663866449651220694, guid: ca09eb4f683ad400f8baef8456708236, type: 3}
+  aimOrigin: {fileID: 80000000000000002}
+  palmGripOrigin: {fileID: 80000000000000014}
+  butcherMinimumSpeed: 0.35
 --- !u!1 &5404664768386838202
 GameObject:
   m_ObjectHideFlags: 0
@@ -17144,7 +17188,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 5c6ccbe197b55e8488026ad8ba0e9e76, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 79dfa83adcf72d541946168c849ba331, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -18827,7 +18871,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 792f6c7eaa1a4b82abf8351559ac97eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_TransformToFollow: {fileID: 1640330763933936822}
+  m_TransformToFollow: {fileID: 80000000000000014}
   m_MotionStabilizationMode: 1
   m_PositionStabilization: 0.25
   m_AngleStabilization: 20
@@ -18898,7 +18942,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef20135915079454985abea5a2ec8967, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_CastOrigin: {fileID: 1640330763933936822}
+  m_CastOrigin: {fileID: 80000000000000002}
   m_EnableStabilization: 1
   m_PositionStabilization: 0.25
   m_AngleStabilization: 20
@@ -20820,29 +20864,45 @@ MonoBehaviour:
   m_UpdateType: 0
   m_IgnoreTrackingState: 0
   m_PositionInput:
-    m_UseReference: 1
+    m_UseReference: 0
     m_Action:
-      m_Name: Position
-      m_Type: 0
+      m_Name: Grip Position
+      m_Type: 2
       m_ExpectedControlType: Vector3
-      m_Id: c21ad7d3-c46f-48ad-99da-097df39312cc
+      m_Id: 2dd0da4d-ce1d-4a42-85f6-a2e9e256df87
       m_Processors: 
       m_Interactions: 
-      m_SingletonActionBindings: []
+      m_SingletonActionBindings:
+      - m_Name: 
+        m_Id: 87325ae9-f403-4f62-8b55-d0660d77c232
+        m_Path: <XRController>{RightHand}/devicePosition
+        m_Interactions: 
+        m_Processors: 
+        m_Groups: 
+        m_Action: Grip Position
+        m_Flags: 0
       m_Flags: 0
-    m_Reference: {fileID: -3326005586356538449, guid: c348712bda248c246b8c49b3db54643f, type: 3}
+    m_Reference: {fileID: 0}
   m_RotationInput:
-    m_UseReference: 1
+    m_UseReference: 0
     m_Action:
-      m_Name: Rotation
-      m_Type: 0
+      m_Name: Grip Rotation
+      m_Type: 2
       m_ExpectedControlType: Quaternion
-      m_Id: 69f091ba-e646-4189-9296-d68870a4d922
+      m_Id: 55de69be-027e-4df8-ae3d-1c2fe73f13ce
       m_Processors: 
       m_Interactions: 
-      m_SingletonActionBindings: []
+      m_SingletonActionBindings:
+      - m_Name: 
+        m_Id: 46464edd-076b-4ce7-9df9-86e4f2e6e151
+        m_Path: <XRController>{RightHand}/deviceRotation
+        m_Interactions: 
+        m_Processors: 
+        m_Groups: 
+        m_Action: Grip Rotation
+        m_Flags: 0
       m_Flags: 0
-    m_Reference: {fileID: 5101698808175986029, guid: c348712bda248c246b8c49b3db54643f, type: 3}
+    m_Reference: {fileID: 0}
   m_TrackingStateInput:
     m_UseReference: 1
     m_Action:
@@ -20888,9 +20948,13 @@ MonoBehaviour:
   grip: {fileID: -1758520528963094988, guid: c348712bda248c246b8c49b3db54643f, type: 3}
   trigger: {fileID: 7904272356298805229, guid: c348712bda248c246b8c49b3db54643f, type: 3}
   isTracked: {fileID: -7044516463258014562, guid: c348712bda248c246b8c49b3db54643f, type: 3}
-  damage: 8
+  damage: 12
   radius: 0.12
   minimumSpeed: 1.2
+  butcherKnifeModel: {fileID: 3663866449651220694, guid: ca09eb4f683ad400f8baef8456708236, type: 3}
+  aimOrigin: {fileID: 80000000000000005}
+  palmGripOrigin: {fileID: 80000000000000016}
+  butcherMinimumSpeed: 0.35
 --- !u!1 &6573711939719187945
 GameObject:
   m_ObjectHideFlags: 0
@@ -23800,7 +23864,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: d0aadb92d3d05c14b8125b75d8c3e487, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 7edfa9a28dcc4584ba5194e74c74f93c, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -24718,7 +24782,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 364a613a8d65a38469900c9133e5e4d1, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 9fe4f9eb838ecb4419917ae68007ca2d, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -28813,9 +28877,9 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8994637629607316889}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: 0, y: 0, z: -0.05}
-  m_LocalScale: {x: -1, y: 1, z: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1714435907202519405}
@@ -30218,6 +30282,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1072240669925157168, guid: ae4ce27d943c25a43ba0b53c76a92ca9, type: 3}
+      propertyPath: m_AimRotationSource
+      value:
+      objectReference: {fileID: 80000000000000002}
+    - target: {fileID: 1072240669925157168, guid: ae4ce27d943c25a43ba0b53c76a92ca9, type: 3}
+      propertyPath: m_PalmGripAnchor
+      value:
+      objectReference: {fileID: 80000000000000014}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -30280,6 +30352,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 441766133220647099, guid: 76cf811cecfba974eaed6623a1bf431e, type: 3}
+      propertyPath: m_AimRotationSource
+      value:
+      objectReference: {fileID: 80000000000000005}
+    - target: {fileID: 441766133220647099, guid: 76cf811cecfba974eaed6623a1bf431e, type: 3}
+      propertyPath: m_PalmGripAnchor
+      value:
+      objectReference: {fileID: 80000000000000016}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -30290,3 +30370,487 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7423385696109589317, guid: 76cf811cecfba974eaed6623a1bf431e, type: 3}
   m_PrefabInstance: {fileID: 4114986194710403680}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &80000000000000001
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 80000000000000002}
+  - component: {fileID: 80000000000000003}
+  m_Layer: 0
+  m_Name: Left Controller Aim Pose
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &80000000000000002
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 80000000000000001}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7131112616242613694}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &80000000000000003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 80000000000000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c2fadf230d1919748a9aa21d40f74619, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_TrackingType: 0
+  m_UpdateType: 0
+  m_IgnoreTrackingState: 0
+  m_PositionInput:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Position
+      m_Type: 0
+      m_ExpectedControlType: Vector3
+      m_Id: cd22b81e-c39a-4170-bdbf-33b5a06ea86f
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: -2024308242397127297, guid: c348712bda248c246b8c49b3db54643f, type: 3}
+  m_RotationInput:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Rotation
+      m_Type: 0
+      m_ExpectedControlType: Quaternion
+      m_Id: 04fa80c1-7876-441c-8416-c5ea3caea5c4
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: 8248158260566104461, guid: c348712bda248c246b8c49b3db54643f, type: 3}
+  m_TrackingStateInput:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Tracking State
+      m_Type: 0
+      m_ExpectedControlType: Integer
+      m_Id: fdcc0d62-5cd0-4fcc-8c3a-c07cf6230b7d
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: 684395432459739428, guid: c348712bda248c246b8c49b3db54643f, type: 3}
+  m_PositionAction:
+    m_Name: 
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: ddb05e9d-4218-401c-a7a8-003424f4b4fa
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  m_RotationAction:
+    m_Name: 
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: de98cdb6-b2c4-4d67-af3c-9c8bd60b295a
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+--- !u!1 &80000000000000004
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 80000000000000005}
+  - component: {fileID: 80000000000000006}
+  m_Layer: 0
+  m_Name: Right Controller Aim Pose
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &80000000000000005
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 80000000000000004}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7131112616242613694}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &80000000000000006
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 80000000000000004}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c2fadf230d1919748a9aa21d40f74619, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_TrackingType: 0
+  m_UpdateType: 0
+  m_IgnoreTrackingState: 0
+  m_PositionInput:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Position
+      m_Type: 0
+      m_ExpectedControlType: Vector3
+      m_Id: c21ad7d3-c46f-48ad-99da-097df39312cc
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: -3326005586356538449, guid: c348712bda248c246b8c49b3db54643f, type: 3}
+  m_RotationInput:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Rotation
+      m_Type: 0
+      m_ExpectedControlType: Quaternion
+      m_Id: 69f091ba-e646-4189-9296-d68870a4d922
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: 5101698808175986029, guid: c348712bda248c246b8c49b3db54643f, type: 3}
+  m_TrackingStateInput:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Tracking State
+      m_Type: 0
+      m_ExpectedControlType: Integer
+      m_Id: 05873c58-6d6f-4aea-8e06-78c4544c58dc
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: -1277054153949319361, guid: c348712bda248c246b8c49b3db54643f, type: 3}
+  m_PositionAction:
+    m_Name: 
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: e0c62bbd-29f9-48af-967b-21babef9a6a4
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  m_RotationAction:
+    m_Name: 
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 303ef588-e0d6-494e-9ceb-2d2edc0eb8e5
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+--- !u!1 &80000000000000007
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 80000000000000008}
+  - component: {fileID: 80000000000000009}
+  m_Layer: 0
+  m_Name: Left Controller Item Pose
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &80000000000000008
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 80000000000000007}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 80000000000000014}
+  m_Father: {fileID: 7131112616242613694}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &80000000000000009
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 80000000000000007}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c2fadf230d1919748a9aa21d40f74619, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  m_TrackingType: 0
+  m_UpdateType: 0
+  m_IgnoreTrackingState: 0
+  m_PositionInput:
+    m_UseReference: 0
+    m_Action:
+      m_Name: Item Grip Position
+      m_Type: 2
+      m_ExpectedControlType: Vector3
+      m_Id: 2eb4af3a-19f8-498c-a402-e0bf67a3607c
+      m_Processors:
+      m_Interactions:
+      m_SingletonActionBindings:
+      - m_Name:
+        m_Id: ba53222c-5b3e-4623-b0da-9994a88118fb
+        m_Path: <XRController>{LeftHand}/devicePosition
+        m_Interactions:
+        m_Processors:
+        m_Groups:
+        m_Action: Item Grip Position
+        m_Flags: 0
+      m_Flags: 0
+    m_Reference: {fileID: 0}
+  m_RotationInput:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Rotation
+      m_Type: 0
+      m_ExpectedControlType: Quaternion
+      m_Id: 41605bcc-8d1f-4713-ba19-f328f7abafe7
+      m_Processors:
+      m_Interactions:
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: 8248158260566104461, guid: c348712bda248c246b8c49b3db54643f, type: 3}
+  m_TrackingStateInput:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Tracking State
+      m_Type: 0
+      m_ExpectedControlType: Integer
+      m_Id: ce22c47b-7027-4510-8790-ca56ffff0939
+      m_Processors:
+      m_Interactions:
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: 684395432459739428, guid: c348712bda248c246b8c49b3db54643f, type: 3}
+  m_PositionAction:
+    m_Name:
+    m_Type: 0
+    m_ExpectedControlType:
+    m_Id: 520f0dbf-ae2e-497f-b293-b2f77acf785c
+    m_Processors:
+    m_Interactions:
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  m_RotationAction:
+    m_Name:
+    m_Type: 0
+    m_ExpectedControlType:
+    m_Id: 1a2d3b93-8185-4aa3-b919-35a80f3e40cc
+    m_Processors:
+    m_Interactions:
+    m_SingletonActionBindings: []
+    m_Flags: 0
+--- !u!1 &80000000000000010
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 80000000000000011}
+  - component: {fileID: 80000000000000012}
+  m_Layer: 0
+  m_Name: Right Controller Item Pose
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &80000000000000011
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 80000000000000010}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 80000000000000016}
+  m_Father: {fileID: 7131112616242613694}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &80000000000000012
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 80000000000000010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c2fadf230d1919748a9aa21d40f74619, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  m_TrackingType: 0
+  m_UpdateType: 0
+  m_IgnoreTrackingState: 0
+  m_PositionInput:
+    m_UseReference: 0
+    m_Action:
+      m_Name: Item Grip Position
+      m_Type: 2
+      m_ExpectedControlType: Vector3
+      m_Id: c95d3b54-9f9b-4689-b814-49c55d3dfd2f
+      m_Processors:
+      m_Interactions:
+      m_SingletonActionBindings:
+      - m_Name:
+        m_Id: 16973865-8e54-444f-a45d-e8d950eb7d42
+        m_Path: <XRController>{RightHand}/devicePosition
+        m_Interactions:
+        m_Processors:
+        m_Groups:
+        m_Action: Item Grip Position
+        m_Flags: 0
+      m_Flags: 0
+    m_Reference: {fileID: 0}
+  m_RotationInput:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Rotation
+      m_Type: 0
+      m_ExpectedControlType: Quaternion
+      m_Id: 8da678b4-9afe-420f-8ee8-88f7a6ef361c
+      m_Processors:
+      m_Interactions:
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: 5101698808175986029, guid: c348712bda248c246b8c49b3db54643f, type: 3}
+  m_TrackingStateInput:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Tracking State
+      m_Type: 0
+      m_ExpectedControlType: Integer
+      m_Id: 50586f3a-2bed-47e0-9fad-b3aca40decf1
+      m_Processors:
+      m_Interactions:
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: -1277054153949319361, guid: c348712bda248c246b8c49b3db54643f, type: 3}
+  m_PositionAction:
+    m_Name:
+    m_Type: 0
+    m_ExpectedControlType:
+    m_Id: d81b8b21-28e9-4755-b66a-90cd65710a2c
+    m_Processors:
+    m_Interactions:
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  m_RotationAction:
+    m_Name:
+    m_Type: 0
+    m_ExpectedControlType:
+    m_Id: 21bc0e72-7c22-4d92-bb36-9ea330b2ccf4
+    m_Processors:
+    m_Interactions:
+    m_SingletonActionBindings: []
+    m_Flags: 0
+--- !u!1 &80000000000000013
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 80000000000000014}
+  m_Layer: 0
+  m_Name: Palm Grip Anchor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &80000000000000014
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 80000000000000013}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.0285, y: -0.003, z: 0.043}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 80000000000000008}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &80000000000000015
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 80000000000000016}
+  m_Layer: 0
+  m_Name: Palm Grip Anchor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &80000000000000016
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 80000000000000015}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.0285, y: -0.003, z: 0.043}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 80000000000000011}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

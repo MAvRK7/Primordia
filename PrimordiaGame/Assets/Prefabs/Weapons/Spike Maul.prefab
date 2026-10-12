@@ -52,7 +52,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 0
   serializedVersion: 3
-  m_Size: {x: 0.31792942, y: 0.31552318, z: 0.23040001}
+  m_Size: {x: 0.317929481, y: 0.315523115, z: 0.2304}
   m_Center: {x: 0, y: 0, z: 0.2448}
 --- !u!114 &8697348496663848575
 MonoBehaviour:
@@ -92,13 +92,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2330637099293458728}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.2592}
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 0.00230000779, y: 0.00272000784, z: -0.259200032}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3843684708610483904}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!1 &6413741763483616085
 GameObject:
   m_ObjectHideFlags: 0
@@ -107,6 +107,7 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+  - component: {fileID: 81000000000000001}
   - component: {fileID: 3843684708610483904}
   - component: {fileID: 9052159684323955272}
   - component: {fileID: 5436979918128960997}
@@ -184,7 +185,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.31169552, y: 0.30933645, z: 0.72}
+  m_Size: {x: 0.31169557, y: 0.309336388, z: 0.72}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &6865624193044889313
 MonoBehaviour:
@@ -310,7 +311,7 @@ MonoBehaviour:
   m_StartingSingleGrabTransformers: []
   m_StartingMultipleGrabTransformers: []
   m_AddDefaultGrabTransformers: 1
-  m_FarAttachMode: 0
+  m_FarAttachMode: 1
   m_LimitLinearVelocity: 0
   m_LimitAngularVelocity: 0
   m_MaxLinearVelocityDelta: 10
@@ -442,27 +443,27 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: a1159cb5906e0420f878183a096ddc68, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.28867438
+      value: 0.288674416
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a1159cb5906e0420f878183a096ddc68, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.28867438
+      value: 0.288674416
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a1159cb5906e0420f878183a096ddc68, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.28867438
+      value: 0.288674416
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a1159cb5906e0420f878183a096ddc68, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.0035219789
+      value: 0.00352198684
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a1159cb5906e0420f878183a096ddc68, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.0051579773
+      value: 0.00515798544
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a1159cb5906e0420f878183a096ddc68, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.17387885
+      value: -0.173878872
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a1159cb5906e0420f878183a096ddc68, type: 3}
       propertyPath: m_LocalRotation.w
@@ -506,3 +507,26 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: a1159cb5906e0420f878183a096ddc68, type: 3}
   m_PrefabInstance: {fileID: 4425370510458878687}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &81000000000000001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6413741763483616085}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b4bf7b45fbf84426a16ffe857bd2167f, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  m_InwardOffset: 0.0325
+  m_HeightOffset: -0.003
+  m_ForwardOffset: 0.039
+  m_FingerCurl: 1
+  m_RingCurlScale: 0.9
+  m_LittleCurlScale: 0.75
+  m_ThumbCurlScale: 1
+  m_HandPitch: 0
+  m_GripFingerAngles: {x: 0, y: 55, z: 60}
+  m_IndexCurlScale: 1
+  m_ThumbOpposition: {x: -15, y: 0}

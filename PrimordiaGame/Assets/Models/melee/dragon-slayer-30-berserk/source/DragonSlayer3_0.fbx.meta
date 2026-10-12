@@ -3,7 +3,32 @@ guid: 5e4ad5ad670084e6488fb6aab03c573e
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: BladeBlack
+    second: {fileID: 2100000, guid: bcbf3b5f6ebb240d9a3da4fd43f83013, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: BladeWhite
+    second: {fileID: 2100000, guid: 4578e78db4b0443f88a4777499a367f9, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Cloth
+    second: {fileID: 2100000, guid: 96bbb39b83e8645c299d12cba09ac4a5, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Metal
+    second: {fileID: 2100000, guid: e1337b83e3415496486ced8afc7b57ab, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: handle
+    second: {fileID: 2100000, guid: b42b3267cd02b4a61a71f2258b511b92, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

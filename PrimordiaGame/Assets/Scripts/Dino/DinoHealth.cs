@@ -11,10 +11,8 @@ public class DinoHealth : MonoBehaviour, IDamageable
     private Animator animator;
     private AudioSource audioSource;   // optional — no AudioSource means silent
     private Transform lastAttacker;    // who dealt the most recent damage
-    private Renderer[] corpseRenderers;
 
     public float CurrentHealth => currentHealth;
-    public BoxCollider CorpseCollider { get; private set; }
 
     public event System.Action<CombatHit> damaged;
     public event System.Action died;
@@ -35,8 +33,10 @@ public class DinoHealth : MonoBehaviour, IDamageable
     public void ApplyHit(CombatHit hit)
     {
         if (IsDead || hit.Damage <= 0f) return;
+        var damageDealt = Mathf.Min(hit.Damage, Mathf.Max(0f, currentHealth));
         currentHealth -= hit.Damage;
         lastAttacker = hit.Attacker;
+        CombatImpactFeedback.EnemyHit(hit, damageDealt, currentHealth <= 0f);
         damaged?.Invoke(hit);
 
         DinoAI ai = GetComponent<DinoAI>();
@@ -60,14 +60,16 @@ public class DinoHealth : MonoBehaviour, IDamageable
 
         PlayClip(profile.deathSound);
 
-        // spawn loot drops
-        DinoLoot loot = GetComponent<DinoLoot>();
-        if (loot != null) loot.DropLoot();
+        // Who killed us? A destroyed attacker reads as null, so this also covers
+        // the debug K-kill with no player in the scene: not a player kill.
+        var killer = lastAttacker != null ? lastAttacker.GetComponentInParent<PlayerHealth>() : null;
+        bool playerKill = killer != null;
 
-        // grant XP ONLY if the player landed the killing blow
-        if (lastAttacker != null && lastAttacker.CompareTag("Player"))
+        // grant XP ONLY if the player landed the killing blow — this happens on
+        // DEATH, not on butcher. Butchering is just a loot-release action.
+        if (playerKill)
         {
-            PlayerProgression prog = lastAttacker.GetComponent<PlayerProgression>();
+            PlayerProgression prog = killer.GetComponent<PlayerProgression>();
             if (prog != null)
             {
                 int xp = profile.xpReward;
@@ -75,73 +77,30 @@ public class DinoHealth : MonoBehaviour, IDamageable
                 prog.AddXP(xp);
             }
         }
+
+        // Stop the AI and freeze the agent in place — the corpse persists in the
+        // world until harvested or its ten-minute lifetime ends.
         DinoAI ai = GetComponent<DinoAI>();
         if (ai != null) ai.enabled = false;
         DinoMover mover = GetComponent<DinoMover>();
         if (mover != null) mover.enabled = false;
         NavMeshAgent agent = GetComponent<NavMeshAgent>();
         if (agent != null) agent.enabled = false;
-        if (animator != null) animator.SetTrigger("Die");
+        if (animator != null)
+        {
+            animator.enabled = true;
+            animator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
+            animator.ResetTrigger("Attack");
+            animator.SetTrigger("Die");
+        }
         foreach (var hitCollider in GetComponentsInChildren<Collider>())
             hitCollider.enabled = false;
-        EnableCorpseTrigger();
+
+        // Every kill leaves a body. Loot and removal happen only after butchering.
+        DinoCorpse corpse = GetComponent<DinoCorpse>();
+        if (corpse == null) corpse = gameObject.AddComponent<DinoCorpse>();
+        corpse.Init(profile, GetComponent<DinoLoot>(), animator);
         died?.Invoke();
-        Destroy(gameObject, 5f);
-    }
-
-    void EnableCorpseTrigger()
-    {
-        // A kinematic body allows trigger callbacks without making the corpse
-        // fall through the terrain after its solid colliders are disabled.
-        var body = GetComponent<Rigidbody>();
-        if (body == null) body = gameObject.AddComponent<Rigidbody>();
-        foreach (var corpseBody in GetComponentsInChildren<Rigidbody>(true))
-        {
-            corpseBody.isKinematic = true;
-            corpseBody.useGravity = false;
-        }
-
-        corpseRenderers = GetComponentsInChildren<Renderer>();
-        CorpseCollider = gameObject.AddComponent<BoxCollider>();
-        CorpseCollider.isTrigger = true;
-        UpdateCorpseBounds();
-    }
-
-    void LateUpdate()
-    {
-        if (CorpseCollider != null)
-            UpdateCorpseBounds();
-    }
-
-    void UpdateCorpseBounds()
-    {
-        // Fit in the dinosaur's local space, including scaled alpha variants,
-        // and follow renderer bounds as the death animation changes the pose.
-        var bounds = new Bounds(Vector3.up * 0.5f, Vector3.one);
-        var hasPoint = false;
-        foreach (var renderer in corpseRenderers)
-        {
-            if (renderer == null || !renderer.enabled ||
-                (renderer is not MeshRenderer && renderer is not SkinnedMeshRenderer))
-                continue;
-
-            var worldBounds = renderer.bounds;
-            for (var x = -1; x <= 1; x += 2)
-            for (var y = -1; y <= 1; y += 2)
-            for (var z = -1; z <= 1; z += 2)
-            {
-                var point = transform.InverseTransformPoint(worldBounds.center +
-                    Vector3.Scale(worldBounds.extents, new Vector3(x, y, z)));
-                if (!hasPoint)
-                {
-                    bounds = new Bounds(point, Vector3.zero);
-                    hasPoint = true;
-                }
-                else bounds.Encapsulate(point);
-            }
-        }
-        CorpseCollider.center = bounds.center;
-        CorpseCollider.size = Vector3.Max(bounds.size, Vector3.one * 0.1f);
     }
 
     // Plays a clip if we have both an AudioSource and a clip. Silent otherwise — never errors.

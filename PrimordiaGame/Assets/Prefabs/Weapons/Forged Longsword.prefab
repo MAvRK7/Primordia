@@ -24,13 +24,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5214640590307310829}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.37999997}
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 0.012254, y: -0.02967899, z: -0.38}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8609691274731137301}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!1 &5656003960266132052
 GameObject:
   m_ObjectHideFlags: 0
@@ -83,8 +83,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 0
   serializedVersion: 3
-  m_Size: {x: 0.062916845, y: 0.14828052, z: 0.71999997}
-  m_Center: {x: 0, y: 0, z: 0.13999999}
+  m_Size: {x: 0.0629168436, y: 0.148280419, z: 0.72}
+  m_Center: {x: 0, y: 0, z: 0.14}
 --- !u!114 &3756986559788065835
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -107,6 +107,7 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+  - component: {fileID: 81000000000000001}
   - component: {fileID: 8609691274731137301}
   - component: {fileID: 7331049976726822580}
   - component: {fileID: 1478969098767347851}
@@ -184,7 +185,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.06168318, y: 0.14537306, z: 0.99999994}
+  m_Size: {x: 0.06168318, y: 0.14537296, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &4072957004878852299
 MonoBehaviour:
@@ -310,7 +311,7 @@ MonoBehaviour:
   m_StartingSingleGrabTransformers: []
   m_StartingMultipleGrabTransformers: []
   m_AddDefaultGrabTransformers: 1
-  m_FarAttachMode: 0
+  m_FarAttachMode: 1
   m_LimitLinearVelocity: 0
   m_LimitAngularVelocity: 0
   m_MaxLinearVelocityDelta: 10
@@ -458,7 +459,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4917d3aacd4374631b571f1fc8322f45, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 1e-08
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4917d3aacd4374631b571f1fc8322f45, type: 3}
       propertyPath: m_LocalPosition.z
@@ -506,3 +507,26 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 4917d3aacd4374631b571f1fc8322f45, type: 3}
   m_PrefabInstance: {fileID: 7767263791756458432}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &81000000000000001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6737977060050940055}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b4bf7b45fbf84426a16ffe857bd2167f, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  m_InwardOffset: 0.0305
+  m_HeightOffset: -0.003
+  m_ForwardOffset: 0.039
+  m_FingerCurl: 1
+  m_RingCurlScale: 0.9
+  m_LittleCurlScale: 0.75
+  m_ThumbCurlScale: 1
+  m_HandPitch: 0
+  m_GripFingerAngles: {x: 0, y: 55, z: 40}
+  m_IndexCurlScale: 1
+  m_ThumbOpposition: {x: -15, y: 0}

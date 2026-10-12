@@ -453,8 +453,8 @@ public static class PrimordiaSampleSceneSetup
                 "The knife handle is not seated inside the low-poly hand's palm.");
             Require(Quaternion.Angle(
                     grab.attachTransform.localRotation,
-                    Quaternion.Euler(-90f, 0f, 0f)) < 1f,
-                "The knife blade is not aligned with the hand's forward grip direction.");
+                    Quaternion.identity) < 1f,
+                "The knife handle must be upright and its blade perpendicular to controller aim.");
 
             var melee = weapon.GetComponent<Melee>();
             var hitbox = weapon.GetComponentInChildren<MeleeHitbox>(true);
@@ -478,20 +478,24 @@ public static class PrimordiaSampleSceneSetup
         {
             Require(Vector3.Distance(
                     grab.attachTransform.localPosition,
-                    new Vector3(0f, -0.029f, -0.046f)) < 0.0001f,
+                    new Vector3(0f, -0.06f, -0.09f)) < 0.0001f,
                 "The revolver handle is not seated inside the low-poly hand's palm.");
             Require(Quaternion.Angle(
                     grab.attachTransform.localRotation,
-                    Quaternion.Euler(0f, 180f, 0f)) < 1f,
+                    Quaternion.identity) < 1f,
                 "The revolver does not face forward in the controller grip.");
 
             var ranged = weapon.GetComponent<Ranged>();
             var serializedRanged = new SerializedObject(ranged);
             var muzzle = serializedRanged.FindProperty("m_FirePoint").objectReferenceValue as Transform;
             Require(muzzle != null, "The revolver has no muzzle transform.");
-            Require(Vector3.Angle(muzzle.forward, weapon.transform.forward) < 1f &&
+            Require(Vector3.Angle(muzzle.forward, grab.attachTransform.forward) < 1f &&
                 muzzle.localPosition.z > grab.attachTransform.localPosition.z,
                 "The revolver muzzle and hitscan direction do not align with the barrel.");
+            var visual = weapon.transform.Find("Visual");
+            Require(visual != null && Quaternion.Angle(
+                    visual.localRotation, Quaternion.Euler(-90f, 180f, 0f)) < 1f,
+                "The revolver visual barrel does not point along the +Z muzzle direction.");
         }
     }
 

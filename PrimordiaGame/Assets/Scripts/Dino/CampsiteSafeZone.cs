@@ -6,7 +6,7 @@ using UnityEngine.AI;
 public sealed class CampsiteSafeZone : MonoBehaviour
 {
     [SerializeField] Vector3 m_Center = new Vector3(0f, 0f, 4f);
-    [SerializeField] Vector3 m_Size = new Vector3(60f, 300f, 60f);
+    [SerializeField] Vector3 m_Size = new Vector3(20f, 300f, 20f);
 
     static CampsiteSafeZone instance;
     NavMeshObstacle obstacle;

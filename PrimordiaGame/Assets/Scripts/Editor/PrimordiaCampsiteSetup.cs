@@ -81,6 +81,21 @@ public static class PrimordiaCampsiteSetup
                 player.GetComponentInChildren<ControllerHandVisual>(true) == null)
                 throw new InvalidOperationException("SampleScene player is missing its configured XR rig, holsters, or controller hands.");
 
+            // Export a standing rig, rather than the simulator's last recorded
+            // head height. Floor tracking uses the headset's actual height.
+            origin.RequestedTrackingOriginMode = XROrigin.TrackingOriginMode.Floor;
+            origin.CameraYOffset = 1.7f;
+            var offset = origin.CameraFloorOffsetObject.transform.localPosition;
+            offset.y = origin.CameraYOffset;
+            origin.CameraFloorOffsetObject.transform.localPosition = offset;
+            var character = origin.GetComponent<CharacterController>();
+            if (character != null)
+            {
+                character.height = origin.CameraYOffset;
+                character.center = new Vector3(0f,
+                    character.height * 0.5f + character.skinWidth, 0f);
+            }
+
             var included = new HashSet<GameObject> { player };
             foreach (var root in roots)
             {
@@ -126,6 +141,7 @@ public static class PrimordiaCampsiteSetup
             }
 
             container.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
+            PrimordiaControllerPoseSetup.Configure(container);
             var prefab = PrefabUtility.SaveAsPrefabAsset(container, PlayerPrefab);
             if (prefab == null)
                 throw new InvalidOperationException("Could not save the configured player prefab.");

@@ -27,9 +27,12 @@ public sealed class Melee : Item
     [SerializeField, Min(0f)] float m_HitHapticDuration = 0.04f;
 
     readonly Dictionary<IDamageable, float> m_NextHitTimes = new Dictionary<IDamageable, float>();
+    readonly HashSet<Collider> m_Contacts = new();
+    readonly HashSet<DinoCorpse> m_ButcheredContacts = new();
 
     XRBaseInputInteractor m_ActiveInteractor;
     Transform m_HolderRoot;
+    Transform m_MotionFrame;
     Vector3 m_PreviousBladePosition;
     Vector3 m_BladeVelocity;
     bool m_HasBladeSample;
@@ -78,11 +81,13 @@ public sealed class Melee : Item
 
         var bladePosition = GetBladeSamplePosition();
         if (m_HasBladeSample && Time.fixedDeltaTime > Mathf.Epsilon)
-            m_BladeVelocity = (bladePosition - m_PreviousBladePosition) / Time.fixedDeltaTime;
+            m_BladeVelocity = m_MotionFrame != null
+                ? m_MotionFrame.TransformVector(m_MotionFrame.InverseTransformPoint(bladePosition) - m_PreviousBladePosition) / Time.fixedDeltaTime
+                : (bladePosition - m_PreviousBladePosition) / Time.fixedDeltaTime;
         else
             m_BladeVelocity = Vector3.zero;
 
-        m_PreviousBladePosition = bladePosition;
+        m_PreviousBladePosition = m_MotionFrame != null ? m_MotionFrame.InverseTransformPoint(bladePosition) : bladePosition;
         m_HasBladeSample = true;
     }
 
@@ -96,6 +101,8 @@ public sealed class Melee : Item
 
         m_ActiveInteractor = inputInteractor;
         m_HolderRoot = inputInteractor.transform.root;
+        var holder = inputInteractor.GetComponentInParent<PlayerHealth>();
+        m_MotionFrame = holder != null ? holder.transform : m_HolderRoot;
         m_NextHitTimes.Clear();
         SetHitboxActive(true);
         ResetBladeSample();
@@ -109,6 +116,7 @@ public sealed class Melee : Item
 
     internal void RegisterHit(Collider other, Collider sourceCollider)
     {
+        if (other != null) m_Contacts.Add(other);
         if (!IsHeldByActiveInteractor() ||
             m_Definition == null ||
             m_Definition.Type != WeaponType.Melee ||
@@ -125,7 +133,21 @@ public sealed class Melee : Item
             return;
         }
 
-        if (!CombatDamageResolver.TryGetDamageable(other, out var target))
+        var corpse = other.GetComponentInParent<DinoCorpse>();
+        if (corpse != null && corpse.CanButcher)
+        {
+            if (!corpse.IsButchered && m_Definition.WeaponId.IndexOf("knife", System.StringComparison.OrdinalIgnoreCase) >= 0 &&
+                m_ButcheredContacts.Add(corpse))
+            {
+                var bladePoint = sourceCollider != null ? sourceCollider.bounds.center : transform.position;
+                if (!corpse.HitWithKnife(bladePoint, -m_BladeVelocity)) return;
+                PlayOneShot(m_HitClip);
+                m_ActiveInteractor.SendHapticImpulse(corpse.IsButchered ? 0.7f : 0.45f,
+                    corpse.IsButchered ? 0.14f : 0.07f);
+            }
+            return;
+        }
+        if (m_Definition.Damage <= 0f || !CombatDamageResolver.TryGetDamageable(other, out var target))
             return;
 
         if (m_NextHitTimes.TryGetValue(target, out var nextHitTime) && Time.time < nextHitTime)
@@ -137,7 +159,7 @@ public sealed class Melee : Item
             ? sourceCollider.bounds.center
             : transform.position;
         var point = other.ClosestPoint(origin);
-        var normal = point - origin;
+        var normal = origin - point;
         if (normal.sqrMagnitude <= Mathf.Epsilon)
             normal = -m_BladeVelocity;
 
@@ -145,7 +167,8 @@ public sealed class Melee : Item
             m_Definition.Damage,
             point,
             normal,
-            m_ActiveInteractor.transform));
+            m_ActiveInteractor.transform,
+            impactKind: CombatImpactKind.Stab));
 
         PlayOneShot(m_HitClip);
         PlayerNoise.EmitNoise(point, m_Definition.NoiseRange);
@@ -159,6 +182,20 @@ public sealed class Melee : Item
             m_GrabInteractable.interactorsSelecting.Contains(m_ActiveInteractor);
     }
 
+    internal void EndContact(Collider other)
+    {
+        m_Contacts.Remove(other);
+        // Disabled or destroyed colliders do not send OnTriggerExit. A killing
+        // blow must not leave the old live hitbox blocking corpse harvesting.
+        m_Contacts.RemoveWhere(contact => contact == null || !contact.enabled ||
+            !contact.gameObject.activeInHierarchy);
+        var corpse = other != null ? other.GetComponentInParent<DinoCorpse>() : null;
+        if (corpse == null) return;
+        foreach (var contact in m_Contacts)
+            if (contact != null && contact.GetComponentInParent<DinoCorpse>() == corpse) return;
+        m_ButcheredContacts.Remove(corpse);
+    }
+
     Vector3 GetBladeSamplePosition()
     {
         var hitCollider = m_Hitbox != null ? m_Hitbox.HitCollider : null;
@@ -169,7 +206,8 @@ public sealed class Melee : Item
 
     void ResetBladeSample()
     {
-        m_PreviousBladePosition = GetBladeSamplePosition();
+        var position = GetBladeSamplePosition();
+        m_PreviousBladePosition = m_MotionFrame != null ? m_MotionFrame.InverseTransformPoint(position) : position;
         m_BladeVelocity = Vector3.zero;
         m_HasBladeSample = true;
     }
@@ -178,9 +216,12 @@ public sealed class Melee : Item
     {
         m_ActiveInteractor = null;
         m_HolderRoot = null;
+        m_MotionFrame = null;
         m_BladeVelocity = Vector3.zero;
         m_HasBladeSample = false;
         m_NextHitTimes.Clear();
+        m_Contacts.Clear();
+        m_ButcheredContacts.Clear();
         SetHitboxActive(false);
     }
 

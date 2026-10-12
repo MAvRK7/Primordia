@@ -40,7 +40,7 @@ public class ResourceSack : MonoBehaviour
 
     public bool CanAfford(int meatCost, int boneCost)
     {
-        return meat >= meatCost && bones >= boneCost;
+        return meatCost >= 0 && boneCost >= 0 && meat >= meatCost && bones >= boneCost;
     }
 
     public bool SpendResources(int meatCost, int boneCost)

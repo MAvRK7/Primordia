@@ -60,6 +60,8 @@ public sealed class Ranged : Item
     XRBaseInputInteractor m_ActiveInteractor;
     Coroutine m_TracerRoutine;
     Coroutine m_RecoilRoutine;
+    Vector3 m_FireStartPosition;
+    Quaternion m_FireStartRotation = Quaternion.identity;
     Coroutine m_ReloadRoutine;
     Vector3 m_VisualStartPosition;
     Quaternion m_VisualStartRotation;
@@ -84,6 +86,11 @@ public sealed class Ranged : Item
         {
             m_VisualStartPosition = m_VisualRoot.localPosition;
             m_VisualStartRotation = m_VisualRoot.localRotation;
+        }
+        if (m_FirePoint != null && m_FirePoint != transform)
+        {
+            m_FireStartPosition = m_FirePoint.localPosition;
+            m_FireStartRotation = m_FirePoint.localRotation;
         }
 
         m_CurrentMagazine = m_Definition != null
@@ -139,10 +146,17 @@ public sealed class Ranged : Item
 
         if (m_VisualRoot != null)
             m_VisualRoot.SetLocalPositionAndRotation(m_VisualStartPosition, m_VisualStartRotation);
+        if (m_FirePoint != null && m_FirePoint != transform)
+            m_FirePoint.SetLocalPositionAndRotation(m_FireStartPosition, m_FireStartRotation);
     }
 
     void Update()
     {
+        if (m_GrabInteractable == null || !m_GrabInteractable.isSelected)
+        {
+            m_TriggerHeld = false;
+            m_ActiveInteractor = null;
+        }
         if (m_TriggerHeld && m_Definition != null && m_Definition.Automatic)
             TryFire(m_ActiveInteractor != null ? m_ActiveInteractor.transform : transform);
     }
@@ -186,10 +200,11 @@ public sealed class Ranged : Item
         NotifyAmmoChanged();
 
         var ray = new Ray(m_FirePoint.position, m_FirePoint.forward);
-        var hasHit = TryFindClosestHit(ray, out var hit);
+        var hasHit = TryFindClosestHit(ray, attacker, out var hit);
         var traceEnd = hasHit
             ? hit.point
             : ray.GetPoint(m_Definition.Range);
+        bool enemyHit = false;
 
         if (hasHit)
         {
@@ -197,15 +212,25 @@ public sealed class Ranged : Item
                 m_Definition.Damage,
                 hit.point,
                 hit.normal,
-                attacker != null ? attacker : transform);
+                attacker != null ? attacker : transform,
+                impactKind: CombatImpactKind.Bullet);
 
-            CombatDamageResolver.TryApply(hit.collider, combatHit, out _);
-            PlayImpact(hit.point, hit.normal);
+            enemyHit = CombatDamageResolver.TryApply(hit.collider, combatHit, out var target) && target is DinoHealth;
+            if (!enemyHit) PlayImpact(hit.point, hit.normal);
         }
 
         PlayShotFeedback(traceEnd);
+        if (enemyHit && m_ActiveInteractor != null)
+            StartCoroutine(ConfirmEnemyHit(m_ActiveInteractor));
         PlayerNoise.EmitNoise(m_FirePoint.position, m_Definition.NoiseRange);
         return true;
+    }
+
+    IEnumerator ConfirmEnemyHit(XRBaseInputInteractor interactor)
+    {
+        yield return new WaitForSeconds(0.08f);
+        if (interactor != null && m_GrabInteractable.interactorsSelecting.Contains(interactor))
+            interactor.SendHapticImpulse(0.25f, 0.035f);
     }
 
     public bool Reload()
@@ -241,14 +266,36 @@ public sealed class Ranged : Item
         NotifyAmmoChanged();
     }
 
-    bool TryFindClosestHit(Ray ray, out RaycastHit closestHit)
+    bool TryFindClosestHit(Ray ray, Transform attacker, out RaycastHit closestHit)
     {
+        var hits = m_HitBuffer;
         var hitCount = Physics.RaycastNonAlloc(
             ray,
-            m_HitBuffer,
+            hits,
             m_Definition.Range,
             m_HitMask,
             QueryTriggerInteraction.Ignore);
+
+        // NonAlloc does not guarantee which hits it returns when the buffer is
+        // full. A crowded herd must not hide the nearest dinosaur or obstruction.
+        if (hitCount == hits.Length)
+        {
+            hits = Physics.RaycastAll(ray, m_Definition.Range, m_HitMask,
+                QueryTriggerInteraction.Ignore);
+            hitCount = hits.Length;
+        }
+
+        var holder = attacker != null ? attacker.GetComponentInParent<PlayerHealth>() : null;
+        if (holder == null && m_ActiveInteractor != null)
+            holder = m_ActiveInteractor.GetComponentInParent<PlayerHealth>();
+        if (holder == null && m_GrabInteractable != null)
+            foreach (var interactor in m_GrabInteractable.interactorsSelecting)
+            {
+                holder = interactor.transform.GetComponentInParent<PlayerHealth>();
+                if (holder != null)
+                    break;
+            }
+        var holderRoot = holder != null ? holder.transform : null;
 
         closestHit = default;
         var closestDistance = float.PositiveInfinity;
@@ -256,8 +303,8 @@ public sealed class Ranged : Item
 
         for (var index = 0; index < hitCount; index++)
         {
-            var candidate = m_HitBuffer[index];
-            if (candidate.collider == null || candidate.collider.transform.IsChildOf(transform))
+            var candidate = hits[index];
+            if (IgnoreShotCollider(candidate.collider, holderRoot))
                 continue;
 
             if (candidate.distance >= closestDistance)
@@ -269,6 +316,25 @@ public sealed class Ranged : Item
         }
 
         return found;
+    }
+
+    bool IgnoreShotCollider(Collider collider, Transform holderRoot)
+    {
+        if (collider == null || collider.transform.IsChildOf(transform))
+            return true;
+        if (holderRoot == null)
+            return false;
+        if (collider.transform.IsChildOf(holderRoot))
+            return true;
+
+        // Grabbed items keep their world parent. The other hand's weapon must
+        // not catch a shot merely because it crosses the firing hand's muzzle.
+        var heldItem = collider.GetComponentInParent<XRGrabInteractable>();
+        if (heldItem != null)
+            foreach (var interactor in heldItem.interactorsSelecting)
+                if (interactor.transform.IsChildOf(holderRoot))
+                    return true;
+        return false;
     }
 
     void PlayShotFeedback(Vector3 traceEnd)
@@ -310,31 +376,42 @@ public sealed class Ranged : Item
     {
         const float kickDuration = 0.045f;
         const float returnDuration = 0.09f;
-        var kickPosition = m_VisualStartPosition - Vector3.forward * m_RecoilDistance;
-        var kickRotation = m_VisualStartRotation * Quaternion.Euler(-m_RecoilAngle, 0f, 0f);
+        var gripPivot = m_GrabInteractable != null && m_GrabInteractable.attachTransform != null
+            ? m_VisualRoot.parent.InverseTransformPoint(m_GrabInteractable.attachTransform.position)
+            : m_VisualStartPosition;
+        var held = m_GrabInteractable != null && m_GrabInteractable.isSelected;
 
-        yield return AnimateVisual(m_VisualStartPosition, kickPosition, m_VisualStartRotation, kickRotation, kickDuration);
-        yield return AnimateVisual(kickPosition, m_VisualStartPosition, kickRotation, m_VisualStartRotation, returnDuration);
+        yield return AnimateGripRecoil(0f, 1f, kickDuration, gripPivot, held);
+        yield return AnimateGripRecoil(1f, 0f, returnDuration, gripPivot, held);
 
         m_VisualRoot.SetLocalPositionAndRotation(m_VisualStartPosition, m_VisualStartRotation);
+        if (m_FirePoint != null && m_FirePoint != transform)
+            m_FirePoint.SetLocalPositionAndRotation(m_FireStartPosition, m_FireStartRotation);
         m_RecoilRoutine = null;
     }
 
-    IEnumerator AnimateVisual(
-        Vector3 fromPosition,
-        Vector3 toPosition,
-        Quaternion fromRotation,
-        Quaternion toRotation,
-        float duration)
+    IEnumerator AnimateGripRecoil(float from, float to, float duration, Vector3 gripPivot, bool held)
     {
         var elapsed = 0f;
         while (elapsed < duration)
         {
             elapsed += Time.deltaTime;
             var amount = duration > 0f ? Mathf.Clamp01(elapsed / duration) : 1f;
-            m_VisualRoot.SetLocalPositionAndRotation(
-                Vector3.LerpUnclamped(fromPosition, toPosition, amount),
-                Quaternion.SlerpUnclamped(fromRotation, toRotation, amount));
+            var kick = Mathf.LerpUnclamped(from, to, amount);
+            // Imported model origins can be metres from the visible weapon.
+            // Rotate in the weapon frame at the grip throughout the animation;
+            // interpolating model-origin positions would still pull the handle away.
+            var pose = Primordia.WeaponPalmGrip.RecoilVisualPose(m_VisualStartPosition,
+                m_VisualStartRotation, gripPivot, -m_RecoilAngle * kick);
+            if (!held) pose.position -= Vector3.forward * (m_RecoilDistance * kick);
+            m_VisualRoot.SetLocalPositionAndRotation(pose.position, pose.rotation);
+            if (m_FirePoint != null && m_FirePoint.parent == m_VisualRoot.parent)
+            {
+                var muzzlePose = Primordia.WeaponPalmGrip.RecoilVisualPose(m_FireStartPosition,
+                    m_FireStartRotation, gripPivot, -m_RecoilAngle * kick);
+                if (!held) muzzlePose.position -= Vector3.forward * (m_RecoilDistance * kick);
+                m_FirePoint.SetLocalPositionAndRotation(muzzlePose.position, muzzlePose.rotation);
+            }
             yield return null;
         }
     }
