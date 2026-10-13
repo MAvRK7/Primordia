@@ -15505,6 +15505,7 @@ GameObject:
   - component: {fileID: 7679994537346038413}
   - component: {fileID: 6176115831351993353}
   - component: {fileID: 3062867510846393532}
+  - component: {fileID: 9100000000000000700}
   m_Layer: 0
   m_Name: Left Controller
   m_TagString: Untagged
@@ -20746,6 +20747,7 @@ GameObject:
   - component: {fileID: 1488686265225241203}
   - component: {fileID: 3835027822770405508}
   - component: {fileID: 3426381545869460752}
+  - component: {fileID: 9100000000000000701}
   m_Layer: 0
   m_Name: Right Controller
   m_TagString: Untagged
@@ -20753,6 +20755,38 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &9100000000000000700
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5392129821663725647}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1855293d92054f1cab105e1a51b62a79, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::HeldAmmoDisplay
+  m_DisplayAnchor: {fileID: 80000000000000014}
+  m_ViewCamera: {fileID: 24287339453749942}
+  m_HandOffset: {x: 0, y: 0.1, z: -0.02}
+  m_DisplayScale: 0.00065
+--- !u!114 &9100000000000000701
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6482395204800633471}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1855293d92054f1cab105e1a51b62a79, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::HeldAmmoDisplay
+  m_DisplayAnchor: {fileID: 80000000000000016}
+  m_ViewCamera: {fileID: 24287339453749942}
+  m_HandOffset: {x: 0, y: 0.1, z: -0.02}
+  m_DisplayScale: 0.00065
 --- !u!4 &749030165475450074
 Transform:
   m_ObjectHideFlags: 0
@@ -29314,6 +29348,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1815703136801432629}
   - component: {fileID: 5828959325950423571}
+  - component: {fileID: 9100000000000000600}
   m_Layer: 0
   m_Name: VR Player Configuration
   m_TagString: Untagged
@@ -29349,11 +29384,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_XROrigin: {fileID: 1469575036989627347}
+  m_InputActions: {fileID: -944628639613478452, guid: c348712bda248c246b8c49b3db54643f, type: 3}
   m_MoveSpeed: 2
   m_SnapTurnAngle: 30
   m_ComfortProfile: {fileID: 11400000, guid: 74fa8d581e364403a3f4ceea12746ef9, type: 2}
   m_ResetAfterFalling: 1
   m_FallResetHeight: -5
+--- !u!114 &9100000000000000600
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9044764537410159563}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f48845e66194f01867104861fb154a7, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerDeathScreen
+  m_Health: {fileID: 4435227458008931858}
+  m_Rig: {fileID: 5828959325950423571}
+  m_ViewCamera: {fileID: 24287339453749942}
 --- !u!1 &9055449083429386844
 GameObject:
   m_ObjectHideFlags: 0

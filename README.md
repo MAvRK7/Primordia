@@ -16,7 +16,9 @@ Choose **Play** from the main menu to enter the island. Camp is a safe zone, so 
 
 The shop currently sells **17 weapons**: nine melee weapons and eight guns, from the knife and wooden spear through to the Rex-Fang Greatblade and Apex Rifle. Prices are set low for the demo, at one or two meat and one or two bones per weapon. The sack starts with 25 meat and 10 bones so you can try some gear straight away.
 
-Your health is shown on your left wrist. Press **Y** on the left controller to return to camp and restore your health, including after dying.
+Your health is shown on your left wrist. While holding a gun in either hand, an ammo readout above that hand shows the rounds in its magazine over its magazine capacity (for example, **6 / 12**). The count turns amber at 25% or less and red when empty. Press **B** to reload; the display shows **RELOADING...** during the reload and **OUT OF AMMO** when both the magazine and reserve are empty.
+
+At 0 health, a **You died** screen appears. Choose **Return to camp**, or press **Y** on the left controller (**Home** in the editor), to return to spawn with full health and resume playing. You can also press **Y** to return to camp and heal while alive.
 
 ## Quest controls
 

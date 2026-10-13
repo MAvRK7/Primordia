@@ -35,6 +35,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
     public event System.Action<CombatHit> damaged;
     public event System.Action died;
+    public event System.Action restored;
 
     void OnEnable()
     {
@@ -58,6 +59,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     {
         currentHealth = maxHealth;
         IsDead = false;
+        restored?.Invoke();
     }
 
     public void TakeDamage(float amount)
@@ -70,7 +72,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         if (invulnerable || IsDead || hit.Damage <= 0f)
             return;
 
-        currentHealth -= hit.Damage;
+        currentHealth = Mathf.Max(0f, currentHealth - hit.Damage);
         damaged?.Invoke(hit);
         Debug.Log("Player took " + hit.Damage + " damage. Health: " + currentHealth);
 

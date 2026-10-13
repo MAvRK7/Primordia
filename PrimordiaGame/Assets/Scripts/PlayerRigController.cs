@@ -21,6 +21,7 @@ public sealed class PlayerRigController : MonoBehaviour
 
     [Header("Rig")]
     [SerializeField] XROrigin m_XROrigin;
+    [SerializeField] InputActionAsset m_InputActions;
 
     [Header("Locomotion")]
     [SerializeField, Min(0f)] float m_MoveSpeed = 2f;
@@ -43,16 +44,20 @@ public sealed class PlayerRigController : MonoBehaviour
 
     void OnEnable()
     {
-        // Y is unused by locomotion and weapons (right B reloads, right A jumps).
-        m_RespawnAction = new InputAction("Return to camp", InputActionType.Button,
-            "<XRController>{LeftHand}/{SecondaryButton}");
-        m_RespawnAction.AddBinding("<Keyboard>/home");
-        m_RespawnAction.Enable();
+        // OpenXR needs the controller binding in an asset at application startup,
+        // before this rig is instantiated by the gameplay scene.
+        m_RespawnAction = m_InputActions != null
+            ? m_InputActions.FindAction("XRI Left/Return to camp")
+            : null;
+        if (m_RespawnAction != null)
+            m_RespawnAction.Enable();
+        else
+            Debug.LogWarning("PlayerRigController needs the Return to camp input action.", this);
     }
 
     void OnDisable()
     {
-        m_RespawnAction?.Dispose();
+        m_RespawnAction?.Disable();
         m_RespawnAction = null;
     }
 
@@ -86,7 +91,8 @@ public sealed class PlayerRigController : MonoBehaviour
 
     void Update()
     {
-        if (m_RespawnAction.WasPressedThisFrame() ||
+        if ((m_RespawnAction != null && m_RespawnAction.WasPressedThisFrame()) ||
+            (Keyboard.current != null && Keyboard.current.homeKey.wasPressedThisFrame) ||
             (m_ResetAfterFalling && m_OriginTransform.position.y < m_FallResetHeight))
             ResetToSpawn();
     }
@@ -196,7 +202,6 @@ public sealed class PlayerRigController : MonoBehaviour
             offset.y = 0f;
             m_OriginTransform.position += offset;
         }
-        m_XROrigin.GetComponentInChildren<PlayerHealth>()?.RestoreHealth();
         Physics.SyncTransforms();
 
         if (controllerWasEnabled)
@@ -204,5 +209,10 @@ public sealed class PlayerRigController : MonoBehaviour
 
         if (gravityWasEnabled)
             m_GravityProvider.enabled = true;
+
+        m_GravityProvider?.ResetFallForce();
+        // Notify the death screen after the teleport is complete so it can safely
+        // restore the locomotion providers that were suspended on death.
+        m_XROrigin.GetComponentInChildren<PlayerHealth>()?.RestoreHealth();
     }
 }

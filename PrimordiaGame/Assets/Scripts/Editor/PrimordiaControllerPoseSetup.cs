@@ -92,6 +92,10 @@ public static class PrimordiaControllerPoseSetup
                 serializedHand.FindProperty("m_PalmGripAnchor").objectReferenceValue = palmGrip;
                 serializedHand.ApplyModifiedPropertiesWithoutUndo();
             }
+            var ammoDisplay = controller.GetComponent<HeldAmmoDisplay>();
+            if (ammoDisplay == null) ammoDisplay = controller.gameObject.AddComponent<HeldAmmoDisplay>();
+            ammoDisplay.Configure(palmGrip, root.GetComponentInChildren<Camera>(true));
+            EditorUtility.SetDirty(ammoDisplay);
             foreach (var image in controller.GetComponentsInChildren<UnityEngine.UI.Image>(true))
             {
                 if (image.sprite != null) continue;
